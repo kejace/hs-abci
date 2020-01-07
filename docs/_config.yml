@@ -1,2 +1,7 @@
 site: docs
 theme: minima
+
+gems:
+  - jekyll-pandoc
+
+markdown: Pandoc
