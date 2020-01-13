@@ -1,10 +1,14 @@
+---
+layout: home
+---
+
 # Module
 
 ## Tutorial.Nameservice.Module
 
 At this point we can collect the relevant pieces to form the Nameservice module:
 
-~~~ haskell
+```
 module Tutorial.Nameservice.Module where
 
 import Nameservice.Modules.Nameservice.Keeper (NameserviceEffs, eval)
@@ -33,11 +37,11 @@ nameserviceModule = Module
   , moduleQueryServer = server
   , moduleEval = eval
   }
-~~~
+```
 
-We are using `defaultTxChecker` as our transaction checker, which is a static message validator defined as 
+We are using `defaultTxChecker` as our transaction checker, which is a static message validator defined as
 
-~~~ haskell ignore
+```
 defaultTxChecker
   :: Member (Error AppError) r
   => ValidateMessage msg
@@ -48,19 +52,19 @@ defaultTxChecker (RoutedTx Tx{txMsg}) =
     V.Failure err ->
       throwSDKError . MessageValidation . map formatMessageSemanticError $ err
     V.Success _ -> pure ()
-~~~
+```
 
-This means that we are only doing static validation, meaning that we're not interested in checking message validitity against the database. This is reflected in the return type for the checker `Sem r ()`. If you want to add custom checking, you may write a custom checker for your module. 
+This means that we are only doing static validation, meaning that we're not interested in checking message validitity against the database. This is reflected in the return type for the checker `Sem r ()`. If you want to add custom checking, you may write a custom checker for your module.
 
 Note the constraints on the module's effects `r`:
 
-~~~ haskell ignore
+```
 ...
   :: Members BaseAppEffs r
   => Members TokenEffs r
   => Members NameserviceEffs r
 ...
-~~~
+```
 
 This is saying that we can run this module in any context for which `r` has the effects from `BaseApp`, `Token`, and `Nameservice`. This is how we explicitly declare module dependencies, by using the constraint system.
 

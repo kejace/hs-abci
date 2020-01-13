@@ -10,4 +10,4 @@ pandoc:
   extensions:
     - normalize
     - smart
-include: ["tutorial"]
+include: ["tutorial/Tutorial", "tutorial/Foundations"]

@@ -1,6 +1,10 @@
+---
+layout: home
+---
+
 # Overview
 
-This section is where we sketch the definition of the Nameservice module and application. It's to everyones benefit if module structures follow a similar file heirachy as the Nameservice module, or any module found in the SDK. In the case of Nameservice this roughly translates to 
+This section is where we sketch the definition of the Nameservice module and application. It's to everyones benefit if module structures follow a similar file heirachy as the Nameservice module, or any module found in the SDK. In the case of Nameservice this roughly translates to
 
 ```
 ├── Nameservice

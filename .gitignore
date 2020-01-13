@@ -2,3 +2,6 @@
 *.cabal
 *~
 .ci-bins/
+docs/_site/
+docs/.*
+docs/Gemfile.lock

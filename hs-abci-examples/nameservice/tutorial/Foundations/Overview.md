@@ -1,6 +1,10 @@
+---
+layout: home
+---
+
 # Overview
 
-The SDK relies heavily on two abstractions to facilitate application development, effects systems and Modules. 
+The SDK relies heavily on two abstractions to facilitate application development, effects systems and Modules.
 
 ## Effects Systems
 

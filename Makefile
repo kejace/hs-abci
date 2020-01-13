@@ -108,10 +108,10 @@ test-tutorial: install ## Make sure the tutorial builds
 
 build-site:
 	cd docs && \
-	find ./tutorial -type f -name "*.md" -exec $(SED) -e 's/~~~.*/``/g' {} + && \
+	find ./tutorial -type f -name "*.md" -exec $(SED) -e 's/~~~ haskell.*/```haskell/g' {} + && \
+	find ./tutorial -type f -name "*.md" -exec $(SED) -e 's/~~~/```/g' {} + && \
 	bundle install && \
 	JEKYLL_ENV=production bundle exec jekyll build --destination _site
-
 
 #####################
 # CI Support
