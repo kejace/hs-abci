@@ -1,5 +1,14 @@
 STATS_PORT ?= 9200
 
+# Thank you Apple
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	DEL=''
+endif
+ifeq ($(UNAME_S),Darwin)
+  DEL= ''
+endif
+
 export
 
 # This is useful for copying example app binaries built on a linux machine rather than building in docker
@@ -97,6 +106,11 @@ test-nameservice: install ## Run the test suite for the nameservice example appl
 test-tutorial: install ## Make sure the tutorial builds
 	stack test nameservice:tutorial
 
+build-site:
+	cd docs && \
+	find ./tutorial -type f -name "*.md" -exec sed -i$(DEL) -e 's/~~~.*/``/g' {} + && \
+	bundle install && \
+	JEKYLL_ENV=production bundle exec jekyll build --destination _site
 
 
 #####################
