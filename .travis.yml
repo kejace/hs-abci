@@ -34,7 +34,7 @@ install:
 
 - script:
   - cd docs
-  - find . -type f -name "*.md" -exec sed -i '' -e 's/.*~~~.*/```/g' {} +
+  - find . -type f -name "*.md" -exec sed -i'' -e 's/.*~~~.*/```/g' {} +
   - JEKYLL_ENV=production bundle exec jekyll build --destination _site
 
 deploy:
