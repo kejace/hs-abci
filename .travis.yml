@@ -33,9 +33,7 @@ install:
 - travis_wait 120 stack --skip-ghc-check setup
 
 - script:
-  - cd docs
-  - find . -type f -name "*.md" -exec sed -i '' -e 's/.*~~~.*/```/g' {} +
-  - JEKYLL_ENV=production bundle exec jekyll build --destination _site
+  - make build-site
 
 deploy:
   provider: pages
