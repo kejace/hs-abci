@@ -3,10 +3,10 @@ STATS_PORT ?= 9200
 # Thank you Apple
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	DEL=''
+	SED=sed -i''
 endif
 ifeq ($(UNAME_S),Darwin)
-  DEL= ''
+	SED=sed -i ''
 endif
 
 export
@@ -108,7 +108,7 @@ test-tutorial: install ## Make sure the tutorial builds
 
 build-site:
 	cd docs && \
-	find ./tutorial -type f -name "*.md" -exec sed -i$(DEL) -e 's/~~~.*/``/g' {} + && \
+	find ./tutorial -type f -name "*.md" -exec $(SED) -e 's/~~~.*/``/g' {} + && \
 	bundle install && \
 	JEKYLL_ENV=production bundle exec jekyll build --destination _site
 
