@@ -1,7 +1,13 @@
 site: docs
-theme: minima
+theme: just-the-docs
 
-gems:
+plugins:
   - jekyll-pandoc
 
 markdown: Pandoc
+
+pandoc:
+  extensions:
+    - normalize
+    - smart
+include: ["tutorial"]

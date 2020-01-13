@@ -74,3 +74,21 @@ jobs:
     - make stylish && git diff-index --quiet HEAD
     - make hlint
     - make weeder
+  - name: "Build docs and push to github pages"
+    if: branch = master
+  - script:
+    - cd docs
+    - find . -type f -name "*.md" -exec sed -i '' -e 's/.*~~~.*/```/g' {} +
+    - JEKYLL_ENV=production bundle exec jekyll build --destination _site
+
+deploy:
+  provider: pages
+  local-dir: ./docs/_site
+  target-branch: master
+  email: deploy@travis-ci.org
+  name: Deployment Bot
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+    branch: master
