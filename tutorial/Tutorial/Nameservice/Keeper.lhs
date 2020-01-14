@@ -6,7 +6,7 @@
 
 ## Tutorial.Nameservice.Keeper
 
-~~~ haskell
+```haskell
 {-# LANGUAGE TemplateHaskell #-}
 module Tutorial.Nameservice.Keeper where
 
@@ -20,12 +20,12 @@ import Nameservice.Modules.Nameservice.Messages (DeleteName(..))
 import Nameservice.Modules.Nameservice.Types (Whois(..), Name, NameDeleted(..), NameserviceModuleName, NameserviceError(..))
 import Nameservice.Modules.Token (Token, mint)
 import qualified Tendermint.SDK.BaseApp as BA
-~~~
+```
 
 Generally a keeper is defined by a set of effects that the module introduces and depends on. In the case of Nameservice, we introduce the custom `Nameservice` effect:
 
 
-~~~ haskell
+```haskell
 data NameserviceKeeper m a where
   PutWhois :: Name -> Whois -> NameserviceKeeper m ()
   GetWhois :: Name -> NameserviceKeeper m (Maybe Whois)
@@ -34,19 +34,19 @@ data NameserviceKeeper m a where
 makeSem ''NameserviceKeeper
 
 type NameserviceEffs = '[NameserviceKeeper, Error NameserviceError]
-~~~
+```
 
 where `makeSem` is from polysemy, it uses template Haskell to create the helper functions `putWhoIs`, `getWhois`, `deleteWhois`:
 
-~~~ haskell ignore
+```haskell
 putWhois :: forall r. Member NameserviceKeeper r => Name -> Whois -> Sem r ()
 getWhois :: forall r. Member NameserviceKeeper r => Name -> Sem r (Maybe Whois)
 deleteWhois :: forall r. Member NameserviceKeeper r => Name -> Sem r ()
-~~~
+```
 
 We can then write the top level function for example for deleting a name:
 
-~~~ haskell
+```haskell
 deleteName
   :: Members [Token, Output BA.Event] r
   => Members [NameserviceKeeper, Error NameserviceError] r
@@ -65,7 +65,7 @@ deleteName DeleteName{..} = do
           BA.emit NameDeleted
             { nameDeletedName = deleteNameName
             }
-~~~
+```
 
 The control flow should be pretty clear:
 1. Check that the name is actually registered, if not throw an error.
@@ -76,9 +76,9 @@ The control flow should be pretty clear:
 
 Taking a look at the class constraints, we see
 
-~~~ haskell ignore
+```haskell
 (Members NameserviceEffs, Members [Token, Output Event] r)
-~~~
+```
 
 - The `NameserviceKeeper` effect is required because the function may manipulate the modules database with `deleteName`.
 - The `Error NameserviceError` effect is required because the function may throw an error.
@@ -92,14 +92,14 @@ Like we said before, all modules must ultimately compile to the set of effects b
 
 A `StoreKey` is effectively a namespacing inside the database, and is unique for a given module. In theory it could be any `ByteString`, but the natural definition in the case of Nameservice is would be something like
 
-~~~ haskell
+```haskell
 storeKey :: BA.StoreKey NameserviceModuleName
 storeKey = BA.StoreKey . cs . symbolVal $ (Proxy @NameserviceModuleName)
-~~~
+```
 
 With this `storeKey` it is possible to write the `eval` function to resolve the effects defined in Nameservice, namely the `NameserviceKeeper` effect and `Error NameserviceError`:
 
-~~~ haskell
+```haskell
 eval
   :: Members [BA.RawStore, Error BA.AppError] r
   => forall a. Sem (NameserviceKeeper ': Error NameserviceError ': r) a
@@ -115,6 +115,6 @@ eval = mapError BA.makeAppError . evalNameservice
           PutWhois name whois -> BA.put storeKey name whois
           DeleteWhois name -> BA.delete storeKey name
         )
-~~~
+```
 
 [Next: Query](Query.md)

@@ -5,7 +5,7 @@ for an application developer to make use of in any part of their application cod
 (in fact required) that any application code can be rewritten in terms of the `BaseApp`
 effects. Let's look at the `BaseApp` type:
 
-~~~ haskell ignore
+```haskell
 type BaseAppEffs =
   [ RawStore
   , Output Event
@@ -13,7 +13,7 @@ type BaseAppEffs =
   , Resource
   , Error AppError
   ]
-~~~
+```
 
 These effects are:
 

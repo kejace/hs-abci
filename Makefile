@@ -13,8 +13,8 @@ install:
 	bundle install 
 
 pre-process:
-	find ./tutorial -type f -name "*.md" -exec $(SED) -e 's/~~~ haskell.*/```haskell/g' {} + && \
-	find ./tutorial -type f -name "*.md" -exec $(SED) -e 's/~~~/```/g' {} +
+	find ./tutorial/ -type f -name "*.md" -exec $(SED) -e 's/~~~ haskell.*/```haskell/g' {} + && \
+	find ./tutorial/ -type f -name "*.md" -exec $(SED) -e 's/~~~/```/g' {} +
 
 build: install pre-process
 	JEKYLL_ENV=production bundle exec jekyll build --destination _site

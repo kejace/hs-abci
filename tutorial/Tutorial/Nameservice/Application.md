@@ -4,20 +4,20 @@
 
 The `App` type in `Network.ABCI.Server` is defined as 
 
-~~~ haskell ignore
+```haskell
 newtype App m = App
   { unApp :: forall (t :: MessageType). Request t -> m (Response t) }
-~~~
+```
 
 and ultimately our configuration of modules must be converted to this format. This is probably the most important part of the SDK, to provide the bridge between the list of modules - a heterogeneous list of type `Modules` - and the actual application. The type that provides the input for this bridge is `HandlersContext`:
 
-~~~ haskell ignore
+```haskell
 data HandlersContext alg ms r core = HandlersContext
   { signatureAlgP :: Proxy alg
   , modules       :: M.Modules ms r
   , compileToCore :: forall a. ScopedEff core a -> Sem core a
   }
-~~~
+```
 
 where
 - `alg` is the signature schema you would like to use for authentication (e.g. Secp256k1)
@@ -33,7 +33,7 @@ The `ScopedEff` type is more complicated and not relevant to the discussion of a
 
 ## Tutorial.Nameservice.Application
 
-~~~ haskell
+```haskell
 module Tutorial.Nameservice.Application where
 
 import Data.Proxy
@@ -45,14 +45,14 @@ import Tendermint.SDK.Modules.Auth (authModule, AuthEffs, AuthM)
 import Tendermint.SDK.Application (Modules(..), HandlersContext(..), baseAppAnteHandler, makeApp)
 import Tendermint.SDK.BaseApp (BaseApp, CoreEffs, (:&), compileScopedEff)
 import Tendermint.SDK.Crypto (Secp256k1)
-~~~
+```
 
 This is the part of the application where the effects list must be given a monomorphic type. There is also a requirement
 that the `Modules` type for the application be given the same _order_ as the effects introducted. This ordering problem is due
 to the fact that type level lists are used to represent the effects in `polysemy`, and the order matters there. Still, it's only a small annoyance.
 
 
-~~~ haskell
+```haskell
 type EffR =
    NameserviceEffs :&
    TokenEffs :&
@@ -64,13 +64,13 @@ type NameserviceModules =
     , TokenM EffR
     , AuthM EffR
     ]
-~~~
+```
 
 Notice that we've specified `EffR` as the effects list for each of the modules to run in, which trivially satisfies the constraints on each module at the definition site, since it is simply the union of all effects.
 
 We're now ready to define the `HandlersContext` for our application:
 
-~~~ haskell
+```haskell
 handlersContext :: HandlersContext Secp256k1 NameserviceModules EffR CoreEffs
 handlersContext = HandlersContext
   { signatureAlgP = Proxy @Secp256k1
@@ -85,12 +85,12 @@ handlersContext = HandlersContext
     :+ tokenModule
     :+ authModule
     :+ NilModules
-~~~
+```
 
 Finally we're able to define our application that runs in the `CoreEffs` context defined in the SDK:
 
 
-~~~ haskell
+```haskell
 app :: App (Sem CoreEffs)
 app = makeApp handlersContext 
-~~~
+```

@@ -37,13 +37,13 @@ We're going to build an example application that mirrors the `golang` [cosmos-sd
 ## Application Specification
 The Nameservice application is a simple marketplace for a name resolution service. Let us say that a `Name` resolves to type called `Whois` where 
 
-~~~ haskell ignore
+```haskell
 data Whois = Whois
   { whoisValue :: Text
   , whoisOwner :: Address
   , whoisPrice :: Amount
   }
-~~~
+```
 
 This means that users can buy and sell entries in a shared mapping of type `Name -> Whois` where:
 1. An unclaimed `Name` can be bought by a user and set to an arbitrary value.
@@ -77,9 +77,9 @@ The SDK makes heavy use of the effects system brought to haskell by the [polysem
 It is also allows the application developer to construct modules without much regard for how they will plug into the SDK, leaving that job to the SDK itself.
 
 (This tutorial is integrated as a literate haskell file, meaning that the following is necessary to ensure it compiles.) 
-~~~ haskell
+```haskell
 main :: IO ()
 main = pure ()
-~~~
+```
 
 [Next: BaseApp](Foundations/Overview.md)
