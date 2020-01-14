@@ -1,158 +1,4 @@
-<!doctype html>
-<!--
-  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
-  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
-  Free for personal and commercial use under the MIT license
-  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
--->
-<html lang="en" class="no-js">
-  <head>
-    <meta charset="utf-8">
-
-<!-- begin _includes/seo.html --><title>tutorial -</title>
-<meta name="description" content="">
-
-
-
-<meta property="og:type" content="website">
-<meta property="og:locale" content="en_US">
-<meta property="og:site_name" content="">
-<meta property="og:title" content="tutorial">
-<meta property="og:url" content="/hs-abci/tutorial/Tutorial/Nameservice/Message.html">
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="canonical" href="/hs-abci/tutorial/Tutorial/Nameservice/Message.html">
-
-
-
-
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    
-      "@type": "Person",
-      "name": null,
-      "url": "/hs-abci/"
-    
-  }
-</script>
-
-
-
-
-
-
-<!-- end _includes/seo.html -->
-
-
-<link href="/hs-abci/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
-
-<!-- https://t.co/dKP3o1e -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<script>
-  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
-</script>
-
-<!-- For all browsers -->
-<link rel="stylesheet" href="/hs-abci/assets/css/main.css">
-
-<!--[if IE]>
-  <style>
-    /* old IE unsupported flexbox fixes */
-    .greedy-nav .site-title {
-      padding-right: 3em;
-    }
-    .greedy-nav button {
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-    }
-  </style>
-<![endif]-->
-
-
-
-    <!-- start custom head snippets -->
-
-<!-- insert favicons. use https://realfavicongenerator.net/ -->
-
-<!-- end custom head snippets -->
-
-  </head>
-
-  <body class="layout--home">
-    <nav class="skip-links">
-  <h2 class="screen-reader-text">Skip links</h2>
-  <ul>
-    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
-    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
-    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
-  </ul>
-</nav>
-
-    <!--[if lt IE 9]>
-<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
-<![endif]-->
-
-    
-
-<div class="masthead">
-  <div class="masthead__inner-wrap">
-    <div class="masthead__menu">
-      <nav id="site-nav" class="greedy-nav">
-        
-        <a class="site-title" href="/hs-abci/">
-          
-          
-        </a>
-        <ul class="visible-links"></ul>
-        
-        <button class="greedy-nav__toggle hidden" type="button">
-          <span class="visually-hidden">Toggle menu</span>
-          <div class="navicon"></div>
-        </button>
-        <ul class="hidden-links hidden"></ul>
-      </nav>
-    </div>
-  </div>
-</div>
-
-
-    <div class="initial-content">
-      
-
-
-
-<div id="main" role="main">
-  
-
-  <div class="archive">
-    
-      <h1 id="page-title" class="page__title">tutorial</h1>
-    
-    <h1 id="message">Message</h1>
-<h2 id="message-types">Message Types</h2>
-<p>The <code>Message</code> module is ultimately a small state machine used for processing messages. Each module must define what messages it accepts, if any. Like many other types found in the SDK, this message class must implement the <code>HasCodec</code> class. We recommend using a protobuf serialization format for messages using either the <code>proto3-suite</code> or <code>proto-lens</code> libraries, though in theory you could use anything (e.g. <code>JSON</code>).</p>
-<h3 id="proto3-suite"><code>proto3-suite</code></h3>
-<p>The advantages of using the <code>proto3-suite</code> library are that it has support for generics and that you can generate a <code>.proto</code> file from your haskell code for export to other applications. This is particularly useful when prototyping or when you have control over the message specification. The disadvantage is that <code>proto3-suite</code> doesn't act as a <code>protoc</code> plugin, and instead uses it's own protobuf parser. This means that you do not have access to the full protobuf specs when parsing <code>.proto</code> files.</p>
-<h3 id="proto-lens"><code>proto-lens</code></h3>
-<p>The advantages of using <code>proto-lens</code> are that it can parse and generate types for pretty much any <code>.proto</code> file. The disadvantage is that the generated code is a bit strange, and may require you to create wrapper types to avoid depending directly on the generated code. An additional disadvantage is that you cannot generate <code>.proto</code> files from haskell code.</p>
-<p>All in all, neither is really difficult to work with, and depending on what stage you're at in development you might chose one over the other.</p>
-<h2 id="tutorial.nameservice.message">Tutorial.Nameservice.Message</h2>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Tutorial.Nameservice.Message</span> <span class="kw">where</span>
+<!DOCTYPE html> <html lang="en-US"> <head> <meta charset="UTF-8"> <meta http-equiv="X-UA-Compatible" content="IE=Edge"> <title>tutorial - </title> <link rel="shortcut icon" href="/hs-abci/favicon.ico" type="image/x-icon"> <link rel="stylesheet" href="/hs-abci/assets/css/just-the-docs.css"> <script async src="https://www.googletagmanager.com/gtag/js?id=UA-5555555-55"></script> <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', "UA-5555555-55"); </script> <script type="text/javascript" src="/hs-abci/assets/js/vendor/lunr.min.js"></script> <script type="text/javascript" src="/hs-abci/assets/js/just-the-docs.js"></script> <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Begin Jekyll SEO tag v2.6.1 --> <title>tutorial</title> <meta name="generator" content="Jekyll v3.8.6" /> <meta property="og:title" content="tutorial" /> <meta property="og:locale" content="en_US" /> <script type="application/ld+json"> {"headline":"tutorial","@type":"WebPage","url":"/hs-abci/tutorial/Tutorial/Nameservice/Message.html","@context":"https://schema.org"}</script> <!-- End Jekyll SEO tag --> </head> <body> <svg xmlns="http://www.w3.org/2000/svg" style="display: none;"> <symbol id="link" viewBox="0 0 16 16"> <title>Link</title> <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path> </symbol> </svg> <div class="page-wrap"> <div class="side-bar"> <div class="site-header"> <a href="hs-abci" class="site-title lh-tight"> </a> <button class="menu-button fs-3 js-main-nav-trigger" data-text-toggle="Hide" type="button">Menu</button> </div> <div class="navigation main-nav js-main-nav"> <nav role="navigation" aria-label="Main navigation"> <ul class="navigation-list"><li class="navigation-list-item"><a href="/hs-abci/tutorial/Tutorial/Nameservice/Application.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Foundations/BaseApp.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Tutorial/Nameservice/Keeper.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item active"><a href="/hs-abci/tutorial/Tutorial/Nameservice/Message.html" class="navigation-list-link active">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Tutorial/Nameservice/Module.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Foundations/Modules.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Foundations/Overview.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Tutorial/Nameservice/Overview.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Tutorial/Nameservice/Query.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/README.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/Tutorial/Nameservice/Types.html" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item active"><a href="/hs-abci/" class="navigation-list-link"></a></li><li class="navigation-list-item"><a href="/hs-abci/tutorial/" class="navigation-list-link">tutorial</a></li><li class="navigation-list-item"><a href="/hs-abci/" class="navigation-list-link">hs-abci</a></li></ul> </nav> </div> <footer class="site-footer"> <p class="text-small text-grey-dk-000 mb-4">This site uses <a href="https://github.com/pmarsceill/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.</p> </footer> </div> <div class="main-content-wrap js-main-content" tabindex="0"> <div class="main-content"> <div class="page-header js-page-header"> <div class="search"> <div class="search-input-wrap"> <input type="text" class="js-search-input search-input" tabindex="0" placeholder="Search " aria-label="Search " autocomplete="off"> <svg width="14" height="14" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" class="search-icon"><title>Search</title><g fill-rule="nonzero"><path d="M17.332 20.735c-5.537 0-10-4.6-10-10.247 0-5.646 4.463-10.247 10-10.247 5.536 0 10 4.601 10 10.247s-4.464 10.247-10 10.247zm0-4c3.3 0 6-2.783 6-6.247 0-3.463-2.7-6.247-6-6.247s-6 2.784-6 6.247c0 3.464 2.7 6.247 6 6.247z"/><path d="M11.672 13.791L.192 25.271 3.02 28.1 14.5 16.62z"/></g></svg> </div> <div class="js-search-results search-results-wrap"></div> </div> <ul class="list-style-none text-small aux-nav"> <li class="d-inline-block my-0"><a href="//github.com/f-o-a-m/hs-abci">GitHub project</a></li> </ul> </div> <div class="page"> <div id="main-content" class="page-content" role="main"> <h1 id="message"> <a href="#message" class="anchor-heading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#link"></use></svg></a> Message </h1> <h2 id="message-types"> <a href="#message-types" class="anchor-heading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#link"></use></svg></a> Message Types </h2> <p>The <code>Message</code> module is ultimately a small state machine used for processing messages. Each module must define what messages it accepts, if any. Like many other types found in the SDK, this message class must implement the <code>HasCodec</code> class. We recommend using a protobuf serialization format for messages using either the <code>proto3-suite</code> or <code>proto-lens</code> libraries, though in theory you could use anything (e.g. <code>JSON</code>).</p> <h3 id="proto3-suite"> <a href="#proto3-suite" class="anchor-heading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#link"></use></svg></a> <code>proto3-suite</code> </h3> <p>The advantages of using the <code>proto3-suite</code> library are that it has support for generics and that you can generate a <code>.proto</code> file from your haskell code for export to other applications. This is particularly useful when prototyping or when you have control over the message specification. The disadvantage is that <code>proto3-suite</code> doesn't act as a <code>protoc</code> plugin, and instead uses it's own protobuf parser. This means that you do not have access to the full protobuf specs when parsing <code>.proto</code> files.</p> <h3 id="proto-lens"> <a href="#proto-lens" class="anchor-heading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#link"></use></svg></a> <code>proto-lens</code> </h3> <p>The advantages of using <code>proto-lens</code> are that it can parse and generate types for pretty much any <code>.proto</code> file. The disadvantage is that the generated code is a bit strange, and may require you to create wrapper types to avoid depending directly on the generated code. An additional disadvantage is that you cannot generate <code>.proto</code> files from haskell code.</p> <p>All in all, neither is really difficult to work with, and depending on what stage you're at in development you might chose one over the other.</p> <h2 id="tutorial.nameservice.message"> <a href="#tutorial.nameservice.message" class="anchor-heading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#link"></use></svg></a> Tutorial.Nameservice.Message </h2> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Tutorial.Nameservice.Message</span> <span class="kw">where</span>
 
 <span class="kw">import </span><span class="dt">Data.Bifunctor</span> (first)
 <span class="kw">import </span><span class="dt">Data.Foldable</span> (sequenceA_)
@@ -167,10 +13,7 @@
 <span class="kw">import </span><span class="dt">Tendermint.SDK.Types.Message</span> (<span class="dt">Msg</span>(..), <span class="dt">ValidateMessage</span>(..),
                                      isAuthorCheck, nonEmptyCheck,
                                      coerceProto3Error, formatMessageParseError)
-<span class="kw">import </span><span class="dt">Tendermint.SDK.Codec</span> (<span class="dt">HasCodec</span>(..))</code></pre></div>
-<h3 id="message-definitions">Message Definitions</h3>
-<p>For the puroposes of the tutorial, we will use the <code>proto3-suite</code> for the message codecs:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SetName</span> <span class="fu">=</span> <span class="dt">SetName</span>
+<span class="kw">import </span><span class="dt">Tendermint.SDK.Codec</span> (<span class="dt">HasCodec</span>(..))</code></pre></div> <h3 id="message-definitions"> <a href="#message-definitions" class="anchor-heading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#link"></use></svg></a> Message Definitions </h3> <p>For the puroposes of the tutorial, we will use the <code>proto3-suite</code> for the message codecs:</p> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SetName</span> <span class="fu">=</span> <span class="dt">SetName</span>
   {<span class="ot"> setNameName  ::</span> <span class="dt">Name</span>
   ,<span class="ot"> setNameOwner ::</span> <span class="dt">Address</span>
   ,<span class="ot"> setNameValue ::</span> <span class="dt">Text</span>
@@ -207,9 +50,7 @@
 
 <span class="kw">instance</span> <span class="dt">HasCodec</span> <span class="dt">BuyName</span> <span class="kw">where</span>
   encode <span class="fu">=</span> cs <span class="fu">.</span> toLazyByteString
-  decode <span class="fu">=</span> first (formatMessageParseError <span class="fu">.</span> coerceProto3Error) <span class="fu">.</span> fromByteString</code></pre></div>
-<p>We want a sum type that covers all possible messages the module can receive. As <code>protobuf</code> is a schemaless format, parsing is sometimes ambiguous if two types are the same up to field names, or one is a subset of the other. For this reason we defined a type called <code>TypedMessage</code>:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">TypedMessage</span> <span class="fu">=</span> <span class="dt">TypedMessage</span>
+  decode <span class="fu">=</span> first (formatMessageParseError <span class="fu">.</span> coerceProto3Error) <span class="fu">.</span> fromByteString</code></pre></div> <p>We want a sum type that covers all possible messages the module can receive. As <code>protobuf</code> is a schemaless format, parsing is sometimes ambiguous if two types are the same up to field names, or one is a subset of the other. For this reason we defined a type called <code>TypedMessage</code>:</p> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">TypedMessage</span> <span class="fu">=</span> <span class="dt">TypedMessage</span>
   {<span class="ot"> typedMessageType     ::</span> <span class="dt">Text</span>
   ,<span class="ot"> typedMessageContents ::</span> <span class="dt">BS.ByteString</span>
   } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>)
@@ -219,9 +60,7 @@
 
 <span class="kw">instance</span> <span class="dt">HasCodec</span> <span class="dt">TypedMessage</span> <span class="kw">where</span>
   encode <span class="fu">=</span> cs <span class="fu">.</span> toLazyByteString
-  decode <span class="fu">=</span> first (formatMessageParseError <span class="fu">.</span> coerceProto3Error) <span class="fu">.</span> fromByteString</code></pre></div>
-<p>This allows us to disambiguated messages based on the <code>type</code> field, so that for example we can distinguish <code>DeleteName</code> from a submessage of <code>BuyName</code>. With that out of the way, we can define the module level (sum) message type:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">NameserviceMessage</span> <span class="fu">=</span>
+  decode <span class="fu">=</span> first (formatMessageParseError <span class="fu">.</span> coerceProto3Error) <span class="fu">.</span> fromByteString</code></pre></div> <p>This allows us to disambiguated messages based on the <code>type</code> field, so that for example we can distinguish <code>DeleteName</code> from a submessage of <code>BuyName</code>. With that out of the way, we can define the module level (sum) message type:</p> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">NameserviceMessage</span> <span class="fu">=</span>
     <span class="dt">NSetName</span> <span class="dt">SetName</span>
   <span class="fu">|</span> <span class="dt">NBuyName</span> <span class="dt">BuyName</span>
   <span class="fu">|</span> <span class="dt">NDeleteName</span> <span class="dt">DeleteName</span>
@@ -238,26 +77,13 @@
   encode <span class="fu">=</span> \<span class="kw">case</span>
     <span class="dt">NSetName</span> msg <span class="ot">-&gt;</span> encode msg
     <span class="dt">NBuyName</span> msg <span class="ot">-&gt;</span> encode msg
-    <span class="dt">NDeleteName</span> msg <span class="ot">-&gt;</span> encode msg</code></pre></div>
-<h2 id="message-validation">Message Validation</h2>
-<p>Message validation is an important part of the transaction life cycle. When a <code>checkTx</code> message comes in, Tendermint is asking whether a transaction bytestring from the mempool is potentially runnable. At the very least this means that</p>
-<ol type="1">
-<li>The transaction parses to a known message</li>
-<li>The message passes basic signature authentication, if any is required.</li>
-<li>The message author has enough funds for the gas costs, if any.</li>
-<li>The message can be successfully routed to a module without handling.</li>
-</ol>
-<p>On top of this you might wish to ensure other static properties of the message, such as that the author of the message is the owner of the funds being transfered. For this we have a <code>ValidateMessage</code> class:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">MessageSemanticError</span> <span class="fu">=</span>
+    <span class="dt">NDeleteName</span> msg <span class="ot">-&gt;</span> encode msg</code></pre></div> <h2 id="message-validation"> <a href="#message-validation" class="anchor-heading"><svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="#link"></use></svg></a> Message Validation </h2> <p>Message validation is an important part of the transaction life cycle. When a <code>checkTx</code> message comes in, Tendermint is asking whether a transaction bytestring from the mempool is potentially runnable. At the very least this means that</p> <ol type="1"> <li>The transaction parses to a known message</li> <li>The message passes basic signature authentication, if any is required.</li> <li>The message author has enough funds for the gas costs, if any.</li> <li>The message can be successfully routed to a module without handling.</li> </ol> <p>On top of this you might wish to ensure other static properties of the message, such as that the author of the message is the owner of the funds being transfered. For this we have a <code>ValidateMessage</code> class:</p> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">MessageSemanticError</span> <span class="fu">=</span>
     <span class="dt">PermissionError</span> <span class="dt">Text</span>
   <span class="fu">|</span> <span class="dt">InvalidFieldError</span> <span class="dt">Text</span>
   <span class="fu">|</span> <span class="dt">OtherSemanticError</span> <span class="dt">Text</span>
 
 <span class="kw">class</span> <span class="dt">ValidateMessage</span> msg <span class="kw">where</span>
-<span class="ot">  validateMessage ::</span> <span class="dt">Msg</span> msg <span class="ot">-&gt;</span> <span class="dt">Validation</span> [<span class="dt">MessageSemanticError</span>] ()</code></pre></div>
-<p>We're using the applicative functor <a href="https://hackage.haskell.org/package/validation-1.1/docs/Data-Validation.html#t:Validation"><code>Data.Validation.Validation</code></a> to perform valdiation because it is capable of reporting all errors at once, rather than the first that occurs as in ther case with something like <code>Either</code>.</p>
-<p>Here's what the <code>isAuthor</code> check looks like, that was described above:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">isAuthorCheck
+<span class="ot">  validateMessage ::</span> <span class="dt">Msg</span> msg <span class="ot">-&gt;</span> <span class="dt">Validation</span> [<span class="dt">MessageSemanticError</span>] ()</code></pre></div> <p>We're using the applicative functor <a href="https://hackage.haskell.org/package/validation-1.1/docs/Data-Validation.html#t:Validation"><code>Data.Validation.Validation</code></a> to perform valdiation because it is capable of reporting all errors at once, rather than the first that occurs as in ther case with something like <code>Either</code>.</p> <p>Here's what the <code>isAuthor</code> check looks like, that was described above:</p> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">isAuthorCheck
 <span class="ot">  ::</span> <span class="dt">Text</span>
   <span class="ot">-&gt;</span> <span class="dt">Msg</span> msg
   <span class="ot">-&gt;</span> (msg <span class="ot">-&gt;</span> <span class="dt">Address</span>)
@@ -265,10 +91,7 @@
 isAuthorCheck fieldName <span class="dt">Msg</span>{msgAuthor, msgData} getAuthor
   <span class="fu">|</span> getAuthor msgData <span class="fu">/=</span> msgAuthor <span class="fu">=</span> 
       _<span class="dt">Failure</span> <span class="fu">#</span> [<span class="dt">PermissionError</span> <span class="fu">$</span> fieldName <span class="fu">&lt;&gt;</span> <span class="st">&quot; must be message author.&quot;</span>]
-  <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="dt">Success</span> ()</code></pre></div>
-<p>It is also possible to run dynamic checks on the transaction, i.e. checks that need to query state in order to succeed or fail. We will say more on this later.</p>
-<p>Here are the validation instances for our message types, which use some of the combinators defined in the SDK</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">ValidateMessage</span> <span class="dt">SetName</span> <span class="kw">where</span>
+  <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="dt">Success</span> ()</code></pre></div> <p>It is also possible to run dynamic checks on the transaction, i.e. checks that need to query state in order to succeed or fail. We will say more on this later.</p> <p>Here are the validation instances for our message types, which use some of the combinators defined in the SDK</p> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">ValidateMessage</span> <span class="dt">SetName</span> <span class="kw">where</span>
   validateMessage msg<span class="fu">@</span><span class="dt">Msg</span>{<span class="fu">..</span>} <span class="fu">=</span>
     <span class="kw">let</span> <span class="dt">SetName</span>{setNameName, setNameValue} <span class="fu">=</span> msgData
         <span class="dt">Name</span> name <span class="fu">=</span> setNameName
@@ -295,61 +118,8 @@ isAuthorCheck fieldName <span class="dt">Msg</span>{msgAuthor, msgData} getAutho
         [ nonEmptyCheck <span class="st">&quot;Name&quot;</span> name
         , nonEmptyCheck <span class="st">&quot;Value&quot;</span> buyNameValue
         , isAuthorCheck <span class="st">&quot;Owner&quot;</span> msg buyNameBuyer
-        ]</code></pre></div>
-<p>Finally we can define a <code>ValidateMessage</code> instance for our top level message type by dispatching on the message type:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">ValidateMessage</span> <span class="dt">NameserviceMessage</span> <span class="kw">where</span>
+        ]</code></pre></div> <p>Finally we can define a <code>ValidateMessage</code> instance for our top level message type by dispatching on the message type:</p> <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">ValidateMessage</span> <span class="dt">NameserviceMessage</span> <span class="kw">where</span>
   validateMessage m<span class="fu">@</span><span class="dt">Msg</span>{msgData} <span class="fu">=</span> <span class="kw">case</span> msgData <span class="kw">of</span>
     <span class="dt">NBuyName</span> msg    <span class="ot">-&gt;</span> validateMessage m {msgData <span class="fu">=</span> msg}
     <span class="dt">NSetName</span> msg    <span class="ot">-&gt;</span> validateMessage m {msgData <span class="fu">=</span> msg}
-    <span class="dt">NDeleteName</span> msg <span class="ot">-&gt;</span> validateMessage m {msgData <span class="fu">=</span> msg}</code></pre></div>
-<p><a href="Keeper.md">Next: Keeper</a></p>
-
-
-<h3 class="archive__subtitle">Recent Posts</h3>
-
-
-
-
-
-
-  </div>
-</div>
-    </div>
-
-    
-
-    <div id="footer" class="page__footer">
-      <footer>
-        <!-- start custom footer snippets -->
-
-<!-- end custom footer snippets -->
-        <div class="page__footer-follow">
-  <ul class="social-icons">
-    
-
-    
-
-    <li><a href="/hs-abci/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
-  </ul>
-</div>
-
-<div class="page__footer-copyright">&copy; 2020 . Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
-
-      </footer>
-    </div>
-
-    
-  <script src="/hs-abci/assets/js/main.min.js"></script>
-  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
-
-
-
-
-
-
-
-
-
-
-  </body>
-</html>
+    <span class="dt">NDeleteName</span> msg <span class="ot">-&gt;</span> validateMessage m {msgData <span class="fu">=</span> msg}</code></pre></div> <p><a href="Keeper.md">Next: Keeper</a></p> </div> </div> </div> </div> </body> </html>

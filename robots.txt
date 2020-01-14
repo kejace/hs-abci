@@ -1,1 +1,0 @@
-Sitemap: /hs-abci/sitemap.xml
