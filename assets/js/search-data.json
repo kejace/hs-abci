@@ -1,37 +1,37 @@
 {
   
   "0": {
-    "title": "tutorial",
+    "title": "Nameservice - Application",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Tutorial/Nameservice/Application.html",
     "relUrl": "/tutorial/Tutorial/Nameservice/Application.html"
   }
   ,"1": {
-    "title": "tutorial",
+    "title": "Foundations - BaseApp",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Foundations/BaseApp.html",
     "relUrl": "/tutorial/Foundations/BaseApp.html"
   }
   ,"2": {
-    "title": "tutorial",
+    "title": "Nameservice - Keeper",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Tutorial/Nameservice/Keeper.html",
     "relUrl": "/tutorial/Tutorial/Nameservice/Keeper.html"
   }
   ,"3": {
-    "title": "tutorial",
+    "title": "Nameservice - Message",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Tutorial/Nameservice/Message.html",
     "relUrl": "/tutorial/Tutorial/Nameservice/Message.html"
   }
   ,"4": {
-    "title": "tutorial",
+    "title": "Nameservice - Module",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Tutorial/Nameservice/Module.html",
     "relUrl": "/tutorial/Tutorial/Nameservice/Module.html"
   }
   ,"5": {
-    "title": "tutorial",
+    "title": "Foundations - Modules",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Foundations/Modules.html",
     "relUrl": "/tutorial/Foundations/Modules.html"
@@ -49,19 +49,19 @@
     "relUrl": "/tutorial/Tutorial/Nameservice/Overview.html"
   }
   ,"8": {
-    "title": "tutorial",
+    "title": "Nameservice - Query",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Tutorial/Nameservice/Query.html",
     "relUrl": "/tutorial/Tutorial/Nameservice/Query.html"
   }
   ,"9": {
-    "title": "tutorial",
+    "title": "Tutorial",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/README.html",
     "relUrl": "/tutorial/README.html"
   }
   ,"10": {
-    "title": "tutorial",
+    "title": "Nameservice - Types",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/Tutorial/Nameservice/Types.html",
     "relUrl": "/tutorial/Tutorial/Nameservice/Types.html"
@@ -73,7 +73,7 @@
     "relUrl": "/"
   }
   ,"12": {
-    "title": "tutorial",
+    "title": "Tutorial",
     "content": "'+content+'",
     "url": "/hs-abci/tutorial/",
     "relUrl": "/tutorial/"
