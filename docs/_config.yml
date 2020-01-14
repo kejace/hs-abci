@@ -6,8 +6,6 @@ plugins:
 
 markdown: Pandoc
 
-pandoc:
-  extensions:
-    - normalize
-    - smart
+host: 0.0.0.0
+
 include: ["tutorial/Tutorial", "tutorial/Foundations"]

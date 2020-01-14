@@ -13,7 +13,7 @@ addons:
     sources:
     - sourceline: 'ppa:tah83/secp256k1'
     packages:
-    - libsecp256k1-dev bundler jekyll
+    - libsecp256k1-dev
 
 cache:
   directories:
@@ -33,7 +33,8 @@ install:
 - travis_wait 120 stack --skip-ghc-check setup
 
 - script:
-  - make build-site
+  - cd docs
+  - make build
 
 deploy:
   provider: pages
