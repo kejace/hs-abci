@@ -15,6 +15,7 @@ install:
 pre-process:
 	find ./tutorial/ -type f -name "*.md" -exec $(SED) -e 's/~~~ haskell.*/```haskell/g' {} + && \
 	find ./tutorial/ -type f -name "*.md" -exec $(SED) -e 's/~~~/```/g' {} +
+	bundle exec just-the-docs rake search:init
 
 build: install pre-process
 	JEKYLL_ENV=production bundle exec jekyll build --destination _site
