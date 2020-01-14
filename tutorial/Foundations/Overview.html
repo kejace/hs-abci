@@ -18,7 +18,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="">
 <meta property="og:title" content="tutorial">
-<meta property="og:url" content="/hs-abci/tutorial/Tutorial/Nameservice/Module.lhs">
+<meta property="og:url" content="/hs-abci/tutorial/Foundations/Overview.html">
 
 
 
@@ -32,7 +32,7 @@
 
 
 
-<link rel="canonical" href="/hs-abci/tutorial/Tutorial/Nameservice/Module.lhs">
+<link rel="canonical" href="/hs-abci/tutorial/Foundations/Overview.html">
 
 
 
@@ -143,75 +143,19 @@
     
       <h1 id="page-title" class="page__title">tutorial</h1>
     
-    # Module
-
-## Tutorial.Nameservice.Module
-
-At this point we can collect the relevant pieces to form the Nameservice module:
-
-```haskell
-module Tutorial.Nameservice.Module where
-
-import Nameservice.Modules.Nameservice.Keeper (NameserviceEffs, eval)
-import Nameservice.Modules.Nameservice.Messages (NameserviceMessage)
-import Nameservice.Modules.Nameservice.Query (Api, server)
-import Nameservice.Modules.Nameservice.Router (router)
-import Nameservice.Modules.Nameservice.Types (NameserviceModuleName)
-import Nameservice.Modules.Token                (TokenEffs)
-import Polysemy                                 (Members)
-import Tendermint.SDK.Application               (Module (..),
-                                                 defaultTxChecker)
-import Tendermint.SDK.BaseApp                   (BaseAppEffs)
-
--- a convenient type alias
-type NameserviceM r =
-  Module NameserviceModuleName NameserviceMessage () Api NameserviceEffs r
-
-nameserviceModule
-  :: Members BaseAppEffs r
-  => Members TokenEffs r
-  => Members NameserviceEffs r
-  => NameserviceM r
-nameserviceModule = Module
-  { moduleTxDeliverer = router
-  , moduleTxChecker = defaultTxChecker
-  , moduleQueryServer = server
-  , moduleEval = eval
-  }
-```
-
-We are using `defaultTxChecker` as our transaction checker, which is a static message validator defined as 
-
-```haskell
-defaultTxChecker
-  :: Member (Error AppError) r
-  => ValidateMessage msg
-  => RoutedTx msg
-  -> Sem r ()
-defaultTxChecker (RoutedTx Tx{txMsg}) =
-  case validateMessage txMsg of
-    V.Failure err ->
-      throwSDKError . MessageValidation . map formatMessageSemanticError $ err
-    V.Success _ -> pure ()
-```
-
-This means that we are only doing static validation, meaning that we're not interested in checking message validitity against the database. This is reflected in the return type for the checker `Sem r ()`. If you want to add custom checking, you may write a custom checker for your module. 
-
-Note the constraints on the module's effects `r`:
-
-```haskell
-...
-  :: Members BaseAppEffs r
-  => Members TokenEffs r
-  => Members NameserviceEffs r
-...
-```
-
-This is saying that we can run this module in any context for which `r` has the effects from `BaseApp`, `Token`, and `Nameservice`. This is how we explicitly declare module dependencies, by using the constraint system.
-
-Other than that, there is nothing really to note. We are just collecting the pieces we have already defined in one place.
-
-[Next: Application](Application.md)
+    <h1 id="overview">Overview</h1>
+<p>The SDK relies heavily on two abstractions to facilitate application development, effects systems and Modules.</p>
+<h2 id="effects-systems">Effects Systems</h2>
+<p>The effects system is backed by a library called <code>polysemy</code> which we mentioned in the introduction. An application basically has three layers of effects</p>
+<ol type="1">
+<li><strong>Application level effects</strong>: These are introduced by the application developer in order to customize application behavior.</li>
+<li><strong>BaseApp effects</strong>: These are effects into which you must interpret your application in order for it to be runnable by the SDK.</li>
+<li><strong>Core effects</strong>: These are largely internal and used to interpet the BaseApp effects to <code>IO</code>. There are a few different core options available in the SDK, but the more advanced developer might wish to use their own.</li>
+</ol>
+<p>The tutorial explains the multiple points at which you can hook your application specific effects and types into the SDK.</p>
+<h2 id="modules">Modules</h2>
+<p>The core building block of an application is a Module. There are some modules that ship with the SDK and make up a kind of standard library. These modules are of general utility, like dealing with things like authentication or tokens, and are considered to be safe.</p>
+<p>The most useful part of the SDK is that you are free to define your own modules, or depend on other third party modules outside the SDK. Since they all have the same type, they all easily fit into larger applications as standalone components or dependencies.</p>
 
 
 <h3 class="archive__subtitle">Recent Posts</h3>

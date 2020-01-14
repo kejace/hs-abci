@@ -18,7 +18,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="">
 <meta property="og:title" content="tutorial">
-<meta property="og:url" content="/hs-abci/tutorial/Tutorial/Nameservice/Module.lhs">
+<meta property="og:url" content="/hs-abci/tutorial/Foundations/BaseApp.html">
 
 
 
@@ -32,7 +32,7 @@
 
 
 
-<link rel="canonical" href="/hs-abci/tutorial/Tutorial/Nameservice/Module.lhs">
+<link rel="canonical" href="/hs-abci/tutorial/Foundations/BaseApp.html">
 
 
 
@@ -143,75 +143,26 @@
     
       <h1 id="page-title" class="page__title">tutorial</h1>
     
-    # Module
-
-## Tutorial.Nameservice.Module
-
-At this point we can collect the relevant pieces to form the Nameservice module:
-
-```haskell
-module Tutorial.Nameservice.Module where
-
-import Nameservice.Modules.Nameservice.Keeper (NameserviceEffs, eval)
-import Nameservice.Modules.Nameservice.Messages (NameserviceMessage)
-import Nameservice.Modules.Nameservice.Query (Api, server)
-import Nameservice.Modules.Nameservice.Router (router)
-import Nameservice.Modules.Nameservice.Types (NameserviceModuleName)
-import Nameservice.Modules.Token                (TokenEffs)
-import Polysemy                                 (Members)
-import Tendermint.SDK.Application               (Module (..),
-                                                 defaultTxChecker)
-import Tendermint.SDK.BaseApp                   (BaseAppEffs)
-
--- a convenient type alias
-type NameserviceM r =
-  Module NameserviceModuleName NameserviceMessage () Api NameserviceEffs r
-
-nameserviceModule
-  :: Members BaseAppEffs r
-  => Members TokenEffs r
-  => Members NameserviceEffs r
-  => NameserviceM r
-nameserviceModule = Module
-  { moduleTxDeliverer = router
-  , moduleTxChecker = defaultTxChecker
-  , moduleQueryServer = server
-  , moduleEval = eval
-  }
-```
-
-We are using `defaultTxChecker` as our transaction checker, which is a static message validator defined as 
-
-```haskell
-defaultTxChecker
-  :: Member (Error AppError) r
-  => ValidateMessage msg
-  => RoutedTx msg
-  -> Sem r ()
-defaultTxChecker (RoutedTx Tx{txMsg}) =
-  case validateMessage txMsg of
-    V.Failure err ->
-      throwSDKError . MessageValidation . map formatMessageSemanticError $ err
-    V.Success _ -> pure ()
-```
-
-This means that we are only doing static validation, meaning that we're not interested in checking message validitity against the database. This is reflected in the return type for the checker `Sem r ()`. If you want to add custom checking, you may write a custom checker for your module. 
-
-Note the constraints on the module's effects `r`:
-
-```haskell
-...
-  :: Members BaseAppEffs r
-  => Members TokenEffs r
-  => Members NameserviceEffs r
-...
-```
-
-This is saying that we can run this module in any context for which `r` has the effects from `BaseApp`, `Token`, and `Nameservice`. This is how we explicitly declare module dependencies, by using the constraint system.
-
-Other than that, there is nothing really to note. We are just collecting the pieces we have already defined in one place.
-
-[Next: Application](Application.md)
+    <h1 id="baseapp">BaseApp</h1>
+<p><code>BaseApp</code> is the set of effects that the SDK operates with and are freely available for an application developer to make use of in any part of their application code. It is expected (in fact required) that any application code can be rewritten in terms of the <code>BaseApp</code> effects. Let's look at the <code>BaseApp</code> type:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">BaseAppEffs</span> <span class="fu">=</span>
+  [ <span class="dt">RawStore</span>
+  , <span class="dt">Output</span> <span class="dt">Event</span>
+  , <span class="dt">Logger</span>
+  , <span class="dt">Resource</span>
+  , <span class="dt">Error</span> <span class="dt">AppError</span>
+  ]</code></pre></div>
+<p>These effects are:</p>
+<ol type="1">
+<li><code>RawStore</code> - allows for basic storage operations, e.g. get, put, delete, prove etc.</li>
+<li><code>Output Event</code> - allows for emitting events in the course of transaction processing.</li>
+<li><code>Logger</code> - allows for console loging with log levels.</li>
+<li><code>Resource</code> - allows for bracketing and resource management in the presence of exeptions.</li>
+<li><code>Error AppError</code> -- allows for errors of type <code>AppError</code> to be thrown or caught.</li>
+</ol>
+<p><code>BaseApp</code> acts as an intermediate effect system for specifying applications, it does not make any assumptions about how these effects will be interpreted at runtime. For example, <code>RawStore</code> could eventualy be interpeted by any persistent or in-memory storage capable of handling the commands <code>Put</code>, <code>Get</code> etc.</p>
+<p>Most of the work in writing modules involves plugging into <code>BaseApp</code> at various points. For example, your module can create custom errors to throw or catch, but you must tell the SDK how to translate this custom error into an <code>AppError</code>. Likewise your module can define custom events to log during transaction execution, but you must describe to the SDK how to translate these custom events types into the type <code>Event</code>.</p>
+<p><a href="Modules.md">Next: Modules</a></p>
 
 
 <h3 class="archive__subtitle">Recent Posts</h3>

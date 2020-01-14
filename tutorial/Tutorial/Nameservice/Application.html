@@ -1,0 +1,252 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>tutorial -</title>
+<meta name="description" content="">
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="">
+<meta property="og:title" content="tutorial">
+<meta property="og:url" content="/hs-abci/tutorial/Tutorial/Nameservice/Application.html">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="/hs-abci/tutorial/Tutorial/Nameservice/Application.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/hs-abci/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/hs-abci/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/hs-abci/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--home">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/hs-abci/">
+          
+          
+        </a>
+        <ul class="visible-links"></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">tutorial</h1>
+    
+    <h1 id="application">Application</h1>
+<h2 id="from-modules-to-app">From Modules to App</h2>
+<p>The <code>App</code> type in <code>Network.ABCI.Server</code> is defined as</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">App</span> m <span class="fu">=</span> <span class="dt">App</span>
+  {<span class="ot"> unApp ::</span> forall (<span class="ot">t ::</span> <span class="dt">MessageType</span>)<span class="fu">.</span> <span class="dt">Request</span> t <span class="ot">-&gt;</span> m (<span class="dt">Response</span> t) }</code></pre></div>
+<p>and ultimately our configuration of modules must be converted to this format. This is probably the most important part of the SDK, to provide the bridge between the list of modules - a heterogeneous list of type <code>Modules</code> - and the actual application. The type that provides the input for this bridge is <code>HandlersContext</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">HandlersContext</span> alg ms r core <span class="fu">=</span> <span class="dt">HandlersContext</span>
+  {<span class="ot"> signatureAlgP ::</span> <span class="dt">Proxy</span> alg
+  ,<span class="ot"> modules       ::</span> <span class="dt">M.Modules</span> ms r
+  ,<span class="ot"> compileToCore ::</span> forall a<span class="fu">.</span> <span class="dt">ScopedEff</span> core a <span class="ot">-&gt;</span> <span class="dt">Sem</span> core a
+  }</code></pre></div>
+<p>where - <code>alg</code> is the signature schema you would like to use for authentication (e.g. Secp256k1) - <code>ms</code> is the type level list of modules - <code>r</code> is the global effects list for the application - <code>core</code> is the set of core effects that are used to interpet <code>BaseApp</code> to <code>IO</code>.</p>
+<p>We should say a few words on this <code>compileToCore</code> field. The application developer has access to any effects in <code>BaseApp</code>, but <code>BaseApp</code> itself still needs to be interpreted in order to run the application. In other words, <code>BaseApp</code> is still just a list of free effects. The set of effects capable of interpreting <code>BaseApp</code> is called <code>core</code>, and while the developer is free to provide any <code>core</code> they want, we have a standard set of them in the SDK - e.g. in memory, production, etc.</p>
+<p>The <code>ScopedEff</code> type is more complicated and not relevant to the discussion of application development. Long story short, tendermint core requests three connections to the application's state - <code>Consensus</code>, <code>Mempool</code> and <code>Query</code>. The <code>ScopedEff</code> type is used to abstract this concern away from the developer, and as long as you are using one of the <code>core</code> effects provided in the SDK you don't need to worry about it.</p>
+<h2 id="tutorial.nameservice.application">Tutorial.Nameservice.Application</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Tutorial.Nameservice.Application</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Proxy</span>
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Nameservice</span> (nameserviceModule, <span class="dt">NameserviceM</span>, <span class="dt">NameserviceEffs</span>)
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Token</span> (tokenModule, <span class="dt">TokenM</span>, <span class="dt">TokenEffs</span>)
+<span class="kw">import </span><span class="dt">Network.ABCI.Server.App</span> (<span class="dt">App</span>)
+<span class="kw">import </span><span class="dt">Polysemy</span> (<span class="dt">Sem</span>)
+<span class="kw">import </span><span class="dt">Tendermint.SDK.Modules.Auth</span> (authModule, <span class="dt">AuthEffs</span>, <span class="dt">AuthM</span>)
+<span class="kw">import </span><span class="dt">Tendermint.SDK.Application</span> (<span class="dt">Modules</span>(..), <span class="dt">HandlersContext</span>(..), baseAppAnteHandler, makeApp)
+<span class="kw">import </span><span class="dt">Tendermint.SDK.BaseApp</span> (<span class="dt">BaseApp</span>, <span class="dt">CoreEffs</span>, (:&amp;), compileScopedEff)
+<span class="kw">import </span><span class="dt">Tendermint.SDK.Crypto</span> (<span class="dt">Secp256k1</span>)</code></pre></div>
+<p>This is the part of the application where the effects list must be given a monomorphic type. There is also a requirement that the <code>Modules</code> type for the application be given the same <em>order</em> as the effects introducted. This ordering problem is due to the fact that type level lists are used to represent the effects in <code>polysemy</code>, and the order matters there. Still, it's only a small annoyance.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">EffR</span> <span class="fu">=</span>
+   <span class="dt">NameserviceEffs</span> <span class="fu">:&amp;</span>
+   <span class="dt">TokenEffs</span> <span class="fu">:&amp;</span>
+   <span class="dt">AuthEffs</span> <span class="fu">:&amp;</span>
+   <span class="dt">BaseApp</span> <span class="dt">CoreEffs</span>
+
+<span class="kw">type</span> <span class="dt">NameserviceModules</span> <span class="fu">=</span>
+   <span class="ch">&#39;[ NameserviceM EffR</span>
+    , <span class="dt">TokenM</span> <span class="dt">EffR</span>
+    , <span class="dt">AuthM</span> <span class="dt">EffR</span>
+    ]</code></pre></div>
+<p>Notice that we've specified <code>EffR</code> as the effects list for each of the modules to run in, which trivially satisfies the constraints on each module at the definition site, since it is simply the union of all effects.</p>
+<p>We're now ready to define the <code>HandlersContext</code> for our application:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">handlersContext ::</span> <span class="dt">HandlersContext</span> <span class="dt">Secp256k1</span> <span class="dt">NameserviceModules</span> <span class="dt">EffR</span> <span class="dt">CoreEffs</span>
+handlersContext <span class="fu">=</span> <span class="dt">HandlersContext</span>
+  { signatureAlgP <span class="fu">=</span> <span class="dt">Proxy</span> <span class="fu">@</span><span class="dt">Secp256k1</span>
+  , modules <span class="fu">=</span> nameserviceModules
+  , compileToCore  <span class="fu">=</span> compileScopedEff
+  , anteHandler <span class="fu">=</span> baseAppAnteHandler
+  }
+  <span class="kw">where</span>
+<span class="ot">  nameserviceModules ::</span> <span class="dt">Modules</span> <span class="dt">NameserviceModules</span> <span class="dt">EffR</span>
+  nameserviceModules <span class="fu">=</span>
+       nameserviceModule
+    <span class="fu">:+</span> tokenModule
+    <span class="fu">:+</span> authModule
+    <span class="fu">:+</span> <span class="dt">NilModules</span></code></pre></div>
+<p>Finally we're able to define our application that runs in the <code>CoreEffs</code> context defined in the SDK:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">app ::</span> <span class="dt">App</span> (<span class="dt">Sem</span> <span class="dt">CoreEffs</span>)
+app <span class="fu">=</span> makeApp handlersContext </code></pre></div>
+
+
+<h3 class="archive__subtitle">Recent Posts</h3>
+
+
+
+
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/hs-abci/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 . Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/hs-abci/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

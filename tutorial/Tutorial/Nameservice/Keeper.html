@@ -1,0 +1,275 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>tutorial -</title>
+<meta name="description" content="">
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="">
+<meta property="og:title" content="tutorial">
+<meta property="og:url" content="/hs-abci/tutorial/Tutorial/Nameservice/Keeper.html">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="/hs-abci/tutorial/Tutorial/Nameservice/Keeper.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/hs-abci/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/hs-abci/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/hs-abci/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--home">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/hs-abci/">
+          
+          
+        </a>
+        <ul class="visible-links"></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">tutorial</h1>
+    
+    <h1 id="keeper">Keeper</h1>
+<h2 id="definition">Definition</h2>
+<p>&quot;Keeper&quot; is a word taken from the cosmos-sdk, it's basically the interface that the module exposes to the other modules in the application. For example, in the Nameservice app, the Nameservice keeper exposes functions to <code>buy</code>/<code>sell</code>/<code>delete</code> entries in the mapping. Likewise, the Nameservice keeper depends on the keeper from the <code>bank</code> module in order to transfer tokens when executing those methods. A keeper might also indicate what kinds of exceptions are able to be caught and thrown from the module. For example, calling <code>transfer</code> while buying a <code>Name</code> might throw an <code>InsufficientFunds</code> exception, which the Namerservice module can chose whether to catch or not.</p>
+<h2 id="tutorial.nameservice.keeper">Tutorial.Nameservice.Keeper</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="kw">module</span> <span class="dt">Tutorial.Nameservice.Keeper</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Proxy</span>
+<span class="kw">import </span><span class="dt">Data.String.Conversions</span> (cs)
+<span class="kw">import </span><span class="dt">GHC.TypeLits</span> (symbolVal)
+<span class="kw">import </span><span class="dt">Polysemy</span> (<span class="dt">Sem</span>, <span class="dt">Members</span>, makeSem, interpret)
+<span class="kw">import </span><span class="dt">Polysemy.Error</span> (<span class="dt">Error</span>, throw, mapError)
+<span class="kw">import </span><span class="dt">Polysemy.Output</span> (<span class="dt">Output</span>)
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Nameservice.Messages</span> (<span class="dt">DeleteName</span>(..))
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Nameservice.Types</span> (<span class="dt">Whois</span>(..), <span class="dt">Name</span>, <span class="dt">NameDeleted</span>(..), <span class="dt">NameserviceModuleName</span>, <span class="dt">NameserviceError</span>(..))
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Token</span> (<span class="dt">Token</span>, mint)
+<span class="kw">import qualified</span> <span class="dt">Tendermint.SDK.BaseApp</span> <span class="kw">as</span> <span class="dt">BA</span></code></pre></div>
+<p>Generally a keeper is defined by a set of effects that the module introduces and depends on. In the case of Nameservice, we introduce the custom <code>Nameservice</code> effect:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">NameserviceKeeper</span> m a <span class="kw">where</span>
+  <span class="dt">PutWhois</span><span class="ot"> ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">Whois</span> <span class="ot">-&gt;</span> <span class="dt">NameserviceKeeper</span> m ()
+  <span class="dt">GetWhois</span><span class="ot"> ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">NameserviceKeeper</span> m (<span class="dt">Maybe</span> <span class="dt">Whois</span>)
+  <span class="dt">DeleteWhois</span><span class="ot"> ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">NameserviceKeeper</span> m ()
+
+makeSem <span class="ch">&#39;&#39;</span><span class="dt">NameserviceKeeper</span>
+
+<span class="kw">type</span> <span class="dt">NameserviceEffs</span> <span class="fu">=</span> <span class="ch">&#39;[NameserviceKeeper, Error NameserviceError]</span></code></pre></div>
+<p>where <code>makeSem</code> is from polysemy, it uses template Haskell to create the helper functions <code>putWhoIs</code>, <code>getWhois</code>, <code>deleteWhois</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">putWhois ::</span> forall r<span class="fu">.</span> <span class="dt">Member</span> <span class="dt">NameserviceKeeper</span> r <span class="ot">=&gt;</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">Whois</span> <span class="ot">-&gt;</span> <span class="dt">Sem</span> r ()
+<span class="ot">getWhois ::</span> forall r<span class="fu">.</span> <span class="dt">Member</span> <span class="dt">NameserviceKeeper</span> r <span class="ot">=&gt;</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">Sem</span> r (<span class="dt">Maybe</span> <span class="dt">Whois</span>)
+<span class="ot">deleteWhois ::</span> forall r<span class="fu">.</span> <span class="dt">Member</span> <span class="dt">NameserviceKeeper</span> r <span class="ot">=&gt;</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">Sem</span> r ()</code></pre></div>
+<p>We can then write the top level function for example for deleting a name:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">deleteName
+<span class="ot">  ::</span> <span class="dt">Members</span> [<span class="dt">Token</span>, <span class="dt">Output</span> <span class="dt">BA.Event</span>] r
+  <span class="ot">=&gt;</span> <span class="dt">Members</span> [<span class="dt">NameserviceKeeper</span>, <span class="dt">Error</span> <span class="dt">NameserviceError</span>] r
+  <span class="ot">=&gt;</span> <span class="dt">DeleteName</span>
+  <span class="ot">-&gt;</span> <span class="dt">Sem</span> r ()
+deleteName <span class="dt">DeleteName</span>{<span class="fu">..</span>} <span class="fu">=</span> <span class="kw">do</span>
+  mWhois <span class="ot">&lt;-</span> getWhois deleteNameName
+  <span class="kw">case</span> mWhois <span class="kw">of</span>
+    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> throw <span class="fu">$</span> <span class="dt">InvalidDelete</span> <span class="st">&quot;Can&#39;t remove unassigned name.&quot;</span>
+    <span class="dt">Just</span> <span class="dt">Whois</span>{<span class="fu">..</span>} <span class="ot">-&gt;</span>
+      <span class="kw">if</span> whoisOwner <span class="fu">/=</span> deleteNameOwner
+        <span class="kw">then</span> throw <span class="fu">$</span> <span class="dt">InvalidDelete</span> <span class="st">&quot;Deleter must be the owner.&quot;</span>
+        <span class="kw">else</span> <span class="kw">do</span>
+          mint deleteNameOwner whoisPrice
+          deleteWhois deleteNameName
+          BA.emit <span class="dt">NameDeleted</span>
+            { nameDeletedName <span class="fu">=</span> deleteNameName
+            }</code></pre></div>
+<p>The control flow should be pretty clear: 1. Check that the name is actually registered, if not throw an error. 2. Check that the name is registered to the person trying to delete it, if not throw an error. 3. Refund the tokens locked in the name to the owner. 4. Delete the entry from the database. 5. Emit an event that the name has been deleted.</p>
+<p>Taking a look at the class constraints, we see</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="dt">Members</span> <span class="dt">NameserviceEffs</span>, <span class="dt">Members</span> [<span class="dt">Token</span>, <span class="dt">Output</span> <span class="dt">Event</span>] r)</code></pre></div>
+<ul>
+<li>The <code>NameserviceKeeper</code> effect is required because the function may manipulate the modules database with <code>deleteName</code>.</li>
+<li>The <code>Error NameserviceError</code> effect is required because the function may throw an error.</li>
+<li>The <code>Token</code> effect is required because the function will mint coins.</li>
+<li>The <code>Output Event</code> effect is required because the function may emit a <code>NameDeleted</code> event.</li>
+</ul>
+<h3 id="evaluating-module-effects">Evaluating Module Effects</h3>
+<p>Like we said before, all modules must ultimately compile to the set of effects belonging to <code>BaseApp</code>. For effects interpreted to <code>RawStore</code>, this means that you will need to define something called a <code>StoreKey</code>.</p>
+<p>A <code>StoreKey</code> is effectively a namespacing inside the database, and is unique for a given module. In theory it could be any <code>ByteString</code>, but the natural definition in the case of Nameservice is would be something like</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">storeKey ::</span> <span class="dt">BA.StoreKey</span> <span class="dt">NameserviceModuleName</span>
+storeKey <span class="fu">=</span> <span class="dt">BA.StoreKey</span> <span class="fu">.</span> cs <span class="fu">.</span> symbolVal <span class="fu">$</span> (<span class="dt">Proxy</span> <span class="fu">@</span><span class="dt">NameserviceModuleName</span>)</code></pre></div>
+<p>With this <code>storeKey</code> it is possible to write the <code>eval</code> function to resolve the effects defined in Nameservice, namely the <code>NameserviceKeeper</code> effect and <code>Error NameserviceError</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">eval
+<span class="ot">  ::</span> <span class="dt">Members</span> [<span class="dt">BA.RawStore</span>, <span class="dt">Error</span> <span class="dt">BA.AppError</span>] r
+  <span class="ot">=&gt;</span> forall a<span class="fu">.</span> <span class="dt">Sem</span> (<span class="dt">NameserviceKeeper</span> <span class="ch">&#39;: Error NameserviceError &#39;</span><span class="fu">:</span> r) a
+  <span class="ot">-&gt;</span> <span class="dt">Sem</span> r a
+eval <span class="fu">=</span> mapError BA.makeAppError <span class="fu">.</span> evalNameservice
+  <span class="kw">where</span>
+    evalNameservice
+<span class="ot">      ::</span> <span class="dt">Members</span> [<span class="dt">BA.RawStore</span>, <span class="dt">Error</span> <span class="dt">BA.AppError</span>] r
+      <span class="ot">=&gt;</span> <span class="dt">Sem</span> (<span class="dt">NameserviceKeeper</span> <span class="ch">&#39;: r) a -&gt; Sem r a</span>
+    evalNameservice <span class="fu">=</span>
+      interpret (\<span class="kw">case</span>
+          <span class="dt">GetWhois</span> name <span class="ot">-&gt;</span> BA.get storeKey name
+          <span class="dt">PutWhois</span> name whois <span class="ot">-&gt;</span> BA.put storeKey name whois
+          <span class="dt">DeleteWhois</span> name <span class="ot">-&gt;</span> BA.delete storeKey name
+        )</code></pre></div>
+<p><a href="Query.md">Next: Query</a></p>
+
+
+<h3 class="archive__subtitle">Recent Posts</h3>
+
+
+
+
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/hs-abci/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 . Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/hs-abci/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

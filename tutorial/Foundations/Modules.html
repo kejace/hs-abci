@@ -1,0 +1,229 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>tutorial -</title>
+<meta name="description" content="">
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="">
+<meta property="og:title" content="tutorial">
+<meta property="og:url" content="/hs-abci/tutorial/Foundations/Modules.html">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="/hs-abci/tutorial/Foundations/Modules.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/hs-abci/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/hs-abci/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/hs-abci/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--home">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/hs-abci/">
+          
+          
+        </a>
+        <ul class="visible-links"></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">tutorial</h1>
+    
+    <h1 id="modules">Modules</h1>
+<h2 id="definition">Definition</h2>
+<p>A <code>Module</code> has a very specific meaning in the context of this SDK. A <code>Module</code> is something between a library and a small state machine. It is built on top of the <code>BaseApp</code> abstraction in the sense that all <code>Module</code>s must be explicitly interpeted in terms of <code>BaseApp</code> in order to compile the application. The full type definition is</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Module</span> (<span class="ot">name ::</span> <span class="dt">Symbol</span>) msg (<span class="ot">api ::</span> <span class="fu">*</span>) (<span class="ot">val ::</span> <span class="fu">*</span>) (<span class="ot">s ::</span> <span class="dt">EffectRow</span>) (<span class="ot">r ::</span> <span class="dt">EffectRow</span>) <span class="fu">=</span> <span class="dt">Module</span>
+  {<span class="ot"> moduleTxDeliverer ::</span> <span class="dt">RoutedTx</span> msg <span class="ot">-&gt;</span> <span class="dt">Sem</span> r val
+  ,<span class="ot"> moduleTxChecker   ::</span> <span class="dt">RoutedTx</span> msg <span class="ot">-&gt;</span> <span class="dt">Sem</span> r val
+  ,<span class="ot"> moduleQueryServer ::</span> <span class="dt">RouteT</span> api (<span class="dt">Sem</span> r)
+  ,<span class="ot"> moduleEval ::</span> forall deps<span class="fu">.</span> <span class="dt">Members</span> <span class="dt">BaseAppEffs</span> deps <span class="ot">=&gt;</span> forall a<span class="fu">.</span> <span class="dt">Sem</span> (s <span class="fu">:&amp;</span> deps) a <span class="ot">-&gt;</span> <span class="dt">Sem</span> deps a
+  }</code></pre></div>
+<p>where the type parameters</p>
+<ul>
+<li><code>name</code> is the name of the module, e.g. <code>&quot;bank&quot;</code>.</li>
+<li><code>msg</code> is the type of the incoming messages the module must handle.</li>
+<li><code>val</code> is the type of the return value (must be common across all messages the module receives).</li>
+<li><code>api</code> is the query api for querying state in the url format (more on this later).<br />
+</li>
+<li><code>s</code> is the set of effects introduced by this module.</li>
+<li><code>r</code> is the global set of effects that this module will run in when part of a larger application (more on this later).</li>
+</ul>
+<p>Below that line we see the fields for the <code>Module</code> data type, where</p>
+<ul>
+<li><code>moduleTxDeliverer</code> specifies how the module processes transactions in order to update the application state during <code>deliverTx</code> messages.</li>
+<li><code>moduleTxChecker</code> is used during <code>checkTx</code> messages to check if a transaction in the mempool is a valid transaction.</li>
+<li><code>moduleQueryServer</code> is responsible for handling queries for application state from the <code>query</code> message.</li>
+<li><code>moduleEval</code> is the natural transformation that specifies how to interpet the <code>Module</code> in terms of <code>BaseApp</code>.</li>
+</ul>
+<p>Note that in the event that a <code>Module</code> is <em>abstract</em>, meaning it doesn't have any messages to respond to, then we have <code>msg ~ Void</code>.</p>
+<h2 id="composition">Composition</h2>
+<p><code>Module</code>s are meant to be composed to create larger applications. We will see examples of this with the <code>Nameservice</code> application. The way to do this is easy, as the <code>Modules</code> data type allows you to simply combine them in a heterogeneous list:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Modules</span> (<span class="ot">ms ::</span> [<span class="fu">*</span>]) r <span class="kw">where</span>
+    <span class="dt">NilModules</span><span class="ot"> ::</span> <span class="dt">Modules</span> <span class="ch">&#39;[] r</span>
+<span class="ot">    (:+) ::</span> <span class="dt">Module</span> name msg api s r <span class="ot">-&gt;</span> <span class="dt">Modules</span> ms r <span class="ot">-&gt;</span> <span class="dt">Modules</span> (<span class="dt">Module</span> name msg api s r  <span class="ch">&#39;: ms) r</span></code></pre></div>
+<p>When you are ready to create your application, you simply specify a value of type <code>Modules</code> and some other configuration data, and the SDK will create an <code>App</code> for you.</p>
+<p><a href="../Tutorial/Nameservice/Types.md">Next: Types</a></p>
+
+
+<h3 class="archive__subtitle">Recent Posts</h3>
+
+
+
+
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/hs-abci/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 . Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/hs-abci/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

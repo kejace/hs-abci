@@ -1,0 +1,222 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>tutorial -</title>
+<meta name="description" content="">
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="">
+<meta property="og:title" content="tutorial">
+<meta property="og:url" content="/hs-abci/tutorial/Tutorial/Nameservice/Query.html">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="/hs-abci/tutorial/Tutorial/Nameservice/Query.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/hs-abci/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/hs-abci/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/hs-abci/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--home">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/hs-abci/">
+          
+          
+        </a>
+        <ul class="visible-links"></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">tutorial</h1>
+    
+    <h1 id="query">Query</h1>
+<h2 id="tutorial.nameservice.query">Tutorial.Nameservice.Query</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Tutorial.Nameservice.Query</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Proxy</span>
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Nameservice.Keeper</span> (storeKey)
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Nameservice.Types</span> (<span class="dt">Whois</span>, <span class="dt">Name</span>)
+<span class="kw">import </span><span class="dt">Polysemy</span> (<span class="dt">Sem</span>, <span class="dt">Members</span>)
+<span class="kw">import </span><span class="dt">Polysemy.Error</span> (<span class="dt">Error</span>)
+<span class="kw">import </span><span class="dt">Tendermint.SDK.BaseApp</span> (<span class="dt">RawStore</span>, <span class="dt">AppError</span>, <span class="dt">RouteT</span>, <span class="dt">QueryApi</span>, storeQueryHandlers)</code></pre></div>
+<p>The way to query application state is via the <code>query</code> message which uses a <code>url</code> like format. The SDK tries to abstract as much of this away as possible. For example, if you want to only serve state that you have registered with the store via the <code>IsKey</code> class, then things are very easy. If you need to make joins to serve requests, we support this as well and it's not hard, but we will skip this for now.</p>
+<p>In the case we just want to serve data we have registered with the <code>IsKey</code> class, we simply need to declare some types</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">NameserviceContents</span> <span class="fu">=</span> <span class="ch">&#39;[(Name, Whois)]</span>
+
+<span class="kw">type</span> <span class="dt">Api</span> <span class="fu">=</span> <span class="dt">QueryApi</span> <span class="dt">NameserviceContents</span></code></pre></div>
+<ul>
+<li><code>NameserviceContents</code> is simply a type level list of the key value pairs you wish to serve. In this case there is only <code>Name -&gt; Whois</code></li>
+<li><code>Api</code> is the list of leaves of valid url's for this module. When the type family <code>QueryApi</code> is applied, it will construct the leaves from the key value pairs based on the <code>IsKey</code> class. In this case you end up with only <code>&quot;/whois&quot;</code> endpoint, which accepts the <code>Name</code> in the <code>data</code> field of the <code>query</code> message encoded via the <code>HasCodec</code> class.</li>
+</ul>
+<p>To serve all the data registered with the <code>IsKey</code> class, we can use the <code>storeQueryHandlers</code> function, supplying a proxy for the store contents, the <code>storeKey</code> and a proxy for the effects used in serving requests. In this case because we are serving only types registered with the store, we will need to assume the <code>RawStore</code> and <code>Error AppError</code> effects.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">server
+<span class="ot">  ::</span> <span class="dt">Members</span> [<span class="dt">RawStore</span>, <span class="dt">Error</span> <span class="dt">AppError</span>] r
+  <span class="ot">=&gt;</span> <span class="dt">RouteT</span> <span class="dt">Api</span> (<span class="dt">Sem</span> r)
+server <span class="fu">=</span>
+  storeQueryHandlers (<span class="dt">Proxy</span> <span class="fu">@</span><span class="dt">NameserviceContents</span>) storeKey (<span class="dt">Proxy</span><span class="ot"> ::</span> <span class="dt">Proxy</span> (<span class="dt">Sem</span> r))</code></pre></div>
+<p>Here <code>RouteT</code> is a type family that can build a server from the <code>Api</code> type to handle incoming requests. It is similar to how <code>servant</code> works, and is largely copy-pasted from that codebase.</p>
+<p><a href="Module.md">Next: Module</a></p>
+
+
+<h3 class="archive__subtitle">Recent Posts</h3>
+
+
+
+
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/hs-abci/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 . Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/hs-abci/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

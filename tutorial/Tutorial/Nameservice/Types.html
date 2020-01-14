@@ -1,0 +1,369 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>tutorial -</title>
+<meta name="description" content="">
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="">
+<meta property="og:title" content="tutorial">
+<meta property="og:url" content="/hs-abci/tutorial/Tutorial/Nameservice/Types.html">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="/hs-abci/tutorial/Tutorial/Nameservice/Types.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/hs-abci/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/hs-abci/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/hs-abci/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--home">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/hs-abci/">
+          
+          
+        </a>
+        <ul class="visible-links"></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">tutorial</h1>
+    
+    <h1 id="types">Types</h1>
+<p>The <code>Types</code> module is used to define the basic types that the module will make use of. This includes things like custom error types, event types, database types, etc.</p>
+<h2 id="using-a-typed-key-value-store">Using A Typed Key Value Store</h2>
+<p>It is important to note that the database modeled by the <code>RawStore</code> effect (in the <code>BaseApp</code> type) is just a key value store for raw <code>ByteString</code>s. This means you can <em>think</em> of <code>RawStore</code> as</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">RawStore</span> <span class="fu">=</span> <span class="dt">Map</span> <span class="dt">ByteString</span> <span class="dt">ByteString</span></code></pre></div>
+<p>although the definition of <code>RawStore</code> is different than the above.</p>
+<p>The interface we give is actually a typed key value store. This means that within the scope of a module <code>m</code>, for any key type <code>k</code>, there is only one possible value type <code>v</code> associated with <code>k</code>.</p>
+<p>For example, a user's balance in the <code>Token</code> module, might be modeled by a mapping</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">balance ::</span> <span class="dt">Tendermint.SDK.Types.Address</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span></code></pre></div>
+<p>(We'll properly introduce the module <code>Token</code> later in the walkthrough.)</p>
+<p>This means that in the scope of the <code>Token</code> module, the database utlity <code>get</code> function applied to a value of type <code>Address</code> will result in a value of type <code>Integer</code>. If the <code>Token</code> module would like to store another mapping whose keys have type <code>Tendermint.SDK.Types.Address</code>, you must use a newtype instead. Otherwise you will get a compiler error.</p>
+<p>At the same time, you are free to define another mapping from <code>k -&gt; v'</code> in the scope of a different module. For example, you can have both the <code>balance</code> mapping described above, as well a mapping</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">owner ::</span> <span class="dt">Tendermint.SDK.Types.Address</span> <span class="ot">-&gt;</span> <span class="dt">Account</span></code></pre></div>
+<p>in the <code>Auth</code> module.</p>
+<h2 id="tutorial.nameservice.types">Tutorial.Nameservice.Types</h2>
+<p>Let's look at the example in <code>Nameservice.Types</code>.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Tutorial.Nameservice.Types</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Lens</span> (iso)
+<span class="kw">import qualified</span> <span class="dt">Data.Aeson</span> <span class="kw">as</span> <span class="dt">A</span>
+<span class="kw">import </span><span class="dt">Data.Bifunctor</span> (first)
+<span class="kw">import </span><span class="dt">Data.Proxy</span>
+<span class="kw">import </span><span class="dt">Data.String.Conversions</span> (cs)
+<span class="kw">import </span><span class="dt">Data.Text</span> (<span class="dt">Text</span>)
+<span class="kw">import </span><span class="dt">GHC.Generics</span> (<span class="dt">Generic</span>)
+<span class="kw">import </span><span class="dt">GHC.TypeLits</span> (symbolVal)
+<span class="kw">import </span><span class="dt">Nameservice.Aeson</span> (defaultNameserviceOptions)
+<span class="kw">import </span><span class="dt">Nameservice.Modules.Token</span> (<span class="dt">Amount</span>)
+<span class="kw">import </span><span class="dt">Proto3.Suite</span> (<span class="dt">Message</span>, fromByteString, toLazyByteString)
+<span class="kw">import qualified</span> <span class="dt">Tendermint.SDK.BaseApp</span> <span class="kw">as</span> <span class="dt">BA</span>
+<span class="kw">import </span><span class="dt">Tendermint.SDK.Codec</span> (<span class="dt">HasCodec</span>(..))
+<span class="kw">import </span><span class="dt">Tendermint.SDK.Types.Address</span> (<span class="dt">Address</span>)
+<span class="kw">import </span><span class="dt">Tendermint.SDK.Types.Message</span> (coerceProto3Error, formatMessageParseError)</code></pre></div>
+<h3 id="storage-types">Storage types</h3>
+<p>Remember the <code>Nameservice</code> module is responsible for maintaining a marketplace around a mapping <code>Name -&gt; Whois</code>. Let us define the types for the marketplace mapping as</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Name</span> <span class="fu">=</span> <span class="dt">Name</span> <span class="dt">Text</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>, <span class="dt">A.ToJSON</span>, <span class="dt">A.FromJSON</span>)
+
+<span class="kw">data</span> <span class="dt">Whois</span> <span class="fu">=</span> <span class="dt">Whois</span>
+  {<span class="ot"> whoisValue ::</span> <span class="dt">Text</span>
+  ,<span class="ot"> whoisOwner ::</span> <span class="dt">Address</span>
+  ,<span class="ot"> whoisPrice ::</span> <span class="dt">Amount</span>
+  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>)</code></pre></div>
+<p>The way that we register <code>Name</code> as a key in the store is by using the <code>RawKey</code> typeclass</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">RawKey</span> k <span class="kw">where</span>
+<span class="ot">  rawKey ::</span> <span class="dt">Iso&#39;</span> k <span class="dt">ByteString</span></code></pre></div>
+<p>This class gives us a way to convert back and forth from a key to its encoding as a <code>ByteString</code>. In our case we implement</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- here cs resolves to Data.Text.Encoding.encodeUtf8, Data.Text.Encoding.decodeUtf8 respectively</span>
+<span class="kw">instance</span> <span class="dt">BA.RawKey</span> <span class="dt">Name</span> <span class="kw">where</span>
+    rawKey <span class="fu">=</span> iso (\(<span class="dt">Name</span> n) <span class="ot">-&gt;</span> cs n) (<span class="dt">Name</span> <span class="fu">.</span> cs)</code></pre></div>
+<p>In order to register <code>Whois</code> as a storage type, we must implement the <code>HasCodec</code> typeclass</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">HasCodec</span> a <span class="kw">where</span>
+<span class="ot">    encode ::</span> a <span class="ot">-&gt;</span> <span class="dt">ByteString</span>
+<span class="ot">    decode ::</span> <span class="dt">ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">Text</span> a</code></pre></div>
+<p>This class is used everywhere in the SDK as the binary codec class for things like storage items, messages, transaction formats etc. It's agnostic to the actual serialization format, you can use <code>JSON</code>, <code>CBOR</code>, <code>Protobuf</code>, etc. Throughout the SDK we typically use <code>protobuf</code> as it is powerful in addition to the fact that there's decent support for this in Haskell either through the <code>proto3-suite</code> package or the <code>proto-lens</code> package.</p>
+<p>So we can implement a <code>HasCodec</code> instance for <code>Whois</code></p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- Message is a class from proto3-suite that defines protobuf codecs generically.</span>
+<span class="kw">instance</span> <span class="dt">Message</span> <span class="dt">Whois</span>
+
+<span class="kw">instance</span> <span class="dt">HasCodec</span> <span class="dt">Whois</span> <span class="kw">where</span>
+  encode <span class="fu">=</span> cs <span class="fu">.</span> toLazyByteString
+  decode <span class="fu">=</span> first (formatMessageParseError <span class="fu">.</span> coerceProto3Error) <span class="fu">.</span> fromByteString</code></pre></div>
+<p>Finally we can register <code>(Name, Whois)</code> with the module's store with the <code>IsKey</code> class, which tells how to associate a key type with a value type within the scope of given module, where the scope is represented by the modules name as a type level string. There is an optional prefixing function for the key in this context in order to avoid collisions in the database. This would be useful for example if you were using multiple newtyped <code>Address</code> types as keys in the same module.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">RawKey</span> k <span class="ot">=&gt;</span> <span class="dt">IsKey</span> k ns <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Value</span> k ns <span class="fu">=</span> a <span class="fu">|</span> a <span class="ot">-&gt;</span> ns k
+<span class="ot">  prefixWith ::</span> <span class="dt">Proxy</span> k <span class="ot">-&gt;</span> <span class="dt">Proxy</span> ns <span class="ot">-&gt;</span> <span class="dt">BS.ByteString</span>
+
+  default<span class="ot"> prefixWith ::</span> <span class="dt">Proxy</span> k <span class="ot">-&gt;</span> <span class="dt">Proxy</span> ns <span class="ot">-&gt;</span> <span class="dt">BS.ByteString</span>
+  prefixWith _ _ <span class="fu">=</span> <span class="st">&quot;&quot;</span></code></pre></div>
+<p>For the case of the <code>Name -&gt; Whois</code> mapping, the <code>IsKey</code> instance looked like looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">NameserviceModuleName</span> <span class="fu">=</span> <span class="st">&quot;nameservice&quot;</span>
+
+<span class="kw">instance</span> <span class="dt">BA.IsKey</span> <span class="dt">Name</span> <span class="dt">NameserviceModuleName</span> <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Value</span> <span class="dt">Name</span> <span class="dt">NameserviceModuleName</span> <span class="fu">=</span> <span class="dt">Whois</span></code></pre></div>
+<p>At is point, you can use the database operations exported by <code>Tendermint.SDK.BaseApp.Store</code> such as <code>put</code>/<code>set</code>/<code>delete</code> for key value pairs of type <code>(Name, Whois)</code>.</p>
+<h3 id="query-types">Query Types</h3>
+<p>The <a href="https://github.com/cosmos/cosmos-sdk"><code>cosmos-sdk</code></a> assumes that you use <code>url</code> formatted queries with some possible query params. For example, to query a <code>Whois</code> value based on a <code>Name</code>, you might submit a <code>query</code> message with the route <code>nameservice/whois</code> and supply a value of type <code>Name</code> to specify as the <code>data</code> field. Our SDK makes the same assumption for compatability reasons.</p>
+<p>In order to register the <code>Whois</code> type with the query service, you must implement the <code>Queryable</code> typeclass:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Queryable</span> a <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Name</span><span class="ot"> a ::</span> <span class="dt">Symbol</span>
+<span class="ot">  encodeQueryResult ::</span> a <span class="ot">-&gt;</span> <span class="dt">Base64String</span>
+<span class="ot">  decodeQueryResult ::</span> <span class="dt">Base64String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">Text</span> a
+
+  default<span class="ot"> encodeQueryResult ::</span> <span class="dt">HasCodec</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Base64String</span>
+  encodeQueryResult <span class="fu">=</span> fromBytes <span class="fu">.</span> encode
+
+  default<span class="ot"> decodeQueryResult ::</span> <span class="dt">HasCodec</span> a <span class="ot">=&gt;</span> <span class="dt">Base64String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">Text</span> a
+  decodeQueryResult <span class="fu">=</span> decode <span class="fu">.</span> toByte</code></pre></div>
+<p>What this means is that you need to supply codecs for the type to query, with the default using the <code>HasCodec</code> class. You also need to name the type, as this will match the leaf of the <code>url</code> used for querying. So for example, in the Nameservice app we have</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">BA.Queryable</span> <span class="dt">Whois</span> <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Name</span> <span class="dt">Whois</span> <span class="fu">=</span> <span class="st">&quot;whois&quot;</span></code></pre></div>
+<p>since <code>Whois</code> already implements the <code>HasCodec</code> class.</p>
+<h3 id="error-types">Error Types</h3>
+<p>You might want to define a module specific error type that has a <code>throw</code>/<code>catch</code> interface. This error type should be accessible by any other dependent modules, and any uncaught error should eventually be converted into some kind of generic application error understandable by Tendermint.</p>
+<p>There is a simple way to do this using the <code>IsAppError</code> typeclass</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">AppError</span> <span class="fu">=</span> <span class="dt">AppError</span>
+  {<span class="ot"> appErrorCode      ::</span> <span class="dt">Word32</span>
+  ,<span class="ot"> appErrorCodespace ::</span> <span class="dt">Text</span>
+  ,<span class="ot"> appErrorMessage   ::</span> <span class="dt">Text</span>
+  } <span class="kw">deriving</span> <span class="dt">Show</span>
+
+<span class="kw">class</span> <span class="dt">IsAppError</span> e <span class="kw">where</span>
+<span class="ot">  makeAppError ::</span> e <span class="ot">-&gt;</span> <span class="dt">AppError</span></code></pre></div>
+<p>The fields for <code>AppError</code> correspond to tendermint message fields for messages that support error return types, such as <code>checkTx</code>, <code>deliverTx</code>, and <code>query</code>. Typically we use the module name as the codespace, like in the definition of <code>NamespaceError</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">NameserviceError</span> <span class="fu">=</span>
+    <span class="dt">InsufficientBid</span> <span class="dt">Text</span>
+  <span class="fu">|</span> <span class="dt">UnauthorizedSet</span> <span class="dt">Text</span>
+  <span class="fu">|</span> <span class="dt">InvalidDelete</span> <span class="dt">Text</span>
+
+<span class="kw">instance</span> <span class="dt">BA.IsAppError</span> <span class="dt">NameserviceError</span> <span class="kw">where</span>
+ <span class="co">-- remember &#39;symbolVal (Proxy @NameserviceModuleName)&#39; resolves to &quot;nameservice&quot;</span>
+  makeAppError (<span class="dt">InsufficientBid</span> msg) <span class="fu">=</span>
+    <span class="dt">BA.AppError</span>
+      { appErrorCode <span class="fu">=</span> <span class="dv">1</span>
+      , appErrorCodespace <span class="fu">=</span> cs <span class="fu">$</span> symbolVal (<span class="dt">Proxy</span> <span class="fu">@</span><span class="dt">NameserviceModuleName</span>)
+      , appErrorMessage <span class="fu">=</span> msg
+      }
+  makeAppError (<span class="dt">UnauthorizedSet</span> msg) <span class="fu">=</span>
+    <span class="dt">BA.AppError</span>
+      { appErrorCode <span class="fu">=</span> <span class="dv">2</span>
+      , appErrorCodespace <span class="fu">=</span> cs <span class="fu">$</span> symbolVal (<span class="dt">Proxy</span> <span class="fu">@</span><span class="dt">NameserviceModuleName</span>)
+      , appErrorMessage <span class="fu">=</span> msg
+      }
+  makeAppError (<span class="dt">InvalidDelete</span> msg) <span class="fu">=</span>
+    <span class="dt">BA.AppError</span>
+      { appErrorCode <span class="fu">=</span> <span class="dv">3</span>
+      , appErrorCodespace <span class="fu">=</span> cs <span class="fu">$</span> symbolVal (<span class="dt">Proxy</span> <span class="fu">@</span><span class="dt">NameserviceModuleName</span>)
+      , appErrorMessage <span class="fu">=</span> msg
+      }</code></pre></div>
+<h3 id="event-types">Event Types</h3>
+<p>Tendermint has the capability to report event logs for transactions in the responses for both <code>checkTx</code> and <code>deliverTx</code> messages. The basic event type can be found in <code>Network.ABCI.Types.MessageFields</code>, it is simply a named key value mapping between <code>Bytestring</code>s:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Event</span> <span class="fu">=</span> <span class="dt">Event</span>
+  {<span class="ot"> eventType       ::</span> <span class="dt">Text</span>
+  <span class="co">-- ^ Type of Event</span>
+  ,<span class="ot"> eventAttributes ::</span> [<span class="dt">KVPair</span>]
+  <span class="co">-- ^ Event attributes</span>
+  }
+
+<span class="kw">data</span> <span class="dt">KVPair</span> <span class="fu">=</span> <span class="dt">KVPair</span>
+  {<span class="ot"> kVPairKey   ::</span> <span class="dt">Base64String</span>
+  <span class="co">-- ^ key</span>
+  ,<span class="ot"> kVPairValue ::</span> <span class="dt">Base64String</span>
+  <span class="co">-- ^ value</span>
+  }</code></pre></div>
+<p>Similar to the custom error messages, you can define custom events at the module level as long as they implement the <code>ToEvent</code> class to translate them to this standard type:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">ToEvent</span> e <span class="kw">where</span>
+<span class="ot">  makeEventType ::</span> <span class="dt">Proxy</span> e <span class="ot">-&gt;</span> <span class="dt">String</span>
+<span class="ot">  makeEventData ::</span> e <span class="ot">-&gt;</span> [(<span class="dt">BS.ByteString</span>, <span class="dt">BS.ByteString</span>)]
+
+  default<span class="ot"> makeEventData ::</span> <span class="dt">A.ToJSON</span> e <span class="ot">=&gt;</span> e <span class="ot">-&gt;</span> [(<span class="dt">BS.ByteString</span>, <span class="dt">BS.ByteString</span>)]
+  makeEventData e <span class="fu">=</span> <span class="kw">case</span> A.toJSON e <span class="kw">of</span>
+    <span class="dt">A.Object</span> obj <span class="ot">-&gt;</span> bimap cs (cs <span class="fu">.</span> A.encode) <span class="fu">&lt;$&gt;</span> toList obj
+    _            <span class="ot">-&gt;</span> mempty</code></pre></div>
+<p>As you can see, there is a default instance for those types which have a <code>JSON</code> representation as an <code>Object</code>. The reason that we chose a <code>JSON</code> default instance is simply because of support for generics, but this isn't set in stone.</p>
+<p>In the case of <code>Nameservice</code>, here is an example of a custom event:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">NameClaimed</span> <span class="fu">=</span> <span class="dt">NameClaimed</span>
+  {<span class="ot"> nameClaimedOwner ::</span> <span class="dt">Address</span>
+  ,<span class="ot"> nameClaimedName  ::</span> <span class="dt">Name</span>
+  ,<span class="ot"> nameClaimedValue ::</span> <span class="dt">Text</span>
+  ,<span class="ot"> nameClaimedBid   ::</span> <span class="dt">Amount</span>
+  } <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>, <span class="dt">Generic</span>)
+
+<span class="co">-- &#39;defaultNameserviceOptions&#39; is used to remove the record accessor prefix.</span>
+<span class="ot">nameClaimedAesonOptions ::</span> <span class="dt">A.Options</span>
+nameClaimedAesonOptions <span class="fu">=</span> defaultNameserviceOptions <span class="st">&quot;nameClaimed&quot;</span>
+
+<span class="kw">instance</span> <span class="dt">A.ToJSON</span> <span class="dt">NameClaimed</span> <span class="kw">where</span>
+  toJSON <span class="fu">=</span> A.genericToJSON nameClaimedAesonOptions
+
+<span class="kw">instance</span> <span class="dt">A.FromJSON</span> <span class="dt">NameClaimed</span> <span class="kw">where</span>
+  parseJSON <span class="fu">=</span> A.genericParseJSON nameClaimedAesonOptions
+
+<span class="kw">instance</span> <span class="dt">BA.ToEvent</span> <span class="dt">NameClaimed</span> <span class="kw">where</span>
+  makeEventType _ <span class="fu">=</span> <span class="st">&quot;NameClaimed&quot;</span></code></pre></div>
+<p><a href="Message.md">Next: Message</a></p>
+
+
+<h3 class="archive__subtitle">Recent Posts</h3>
+
+
+
+
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/hs-abci/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 . Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/hs-abci/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
