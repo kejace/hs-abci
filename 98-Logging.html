@@ -471,13 +471,13 @@ footer
 <h2>Logging to Elasticsearch</h2>
 <p>The docker network includes an <code>elk</code> image (Elasticsearch, Logstash, Kibana) for persisting and querying logs. You can read more about this stack <a href="https://www.elastic.co/what-is/elk-stack">here</a>. In summary <code>elk</code> is a powerful solution for hosting searchable structured logs.</p>
 <p>When logging to Elasticsearch, you can use the Kibana dashboard for creating queries and visualizations. We will cover the basics here. If you have already launched the docker network, you can view the Kibana dashboard by going to <a href="http://localhost:5601/app/kibana">http://localhost:5601/app/kibana</a>. You should see something like</p>
-<p><img src="https://raw.githubusercontent.com/f-o-a-m/hs-abci/master/hs-abci-examples/nameservice/images/kibana_welcome_screen.png" width="50%"/></p>
+<p><img src="https://raw.githubusercontent.com/f-o-a-m/kepler/master/hs-abci-docs/nameservice/images/kibana_welcome_screen.png" width="50%"/></p>
 <p>To create an index (a searchable pattern), click on the <em>Management</em> tab, click <em>Create Index</em>, and enter <code>nameservice</code> as the pattern. You should see something like this:</p>
-<p><img src="https://raw.githubusercontent.com/f-o-a-m/hs-abci/master/hs-abci-examples/nameservice/images/kibana_management.png" width="50%"/></p>
+<p><img src="https://raw.githubusercontent.com/f-o-a-m/kepler/master/hs-abci-docs/nameservice/images/kibana_management.png" width="50%"/></p>
 <p>You can ignore the advanced options, e.g. time filter, for now:</p>
-<p><img src="https://raw.githubusercontent.com/f-o-a-m/hs-abci/master/hs-abci-examples/nameservice/images/kibana_management_2.png" width="50%"/></p>
+<p><img src="https://raw.githubusercontent.com/f-o-a-m/kepler/master/hs-abci-docs/nameservice/images/kibana_management_2.png" width="50%"/></p>
 <p>To view and search the logs, you can click the <code>Discover</code> tab. You should see all of the logs in the resulting search, from both server and application:</p>
-<p><img src="https://raw.githubusercontent.com/f-o-a-m/hs-abci/master/hs-abci-examples/nameservice/images/kibana_discover.png" width="50%"/></p>
+<p><img src="https://raw.githubusercontent.com/f-o-a-m/kepler/master/hs-abci-docs/nameservice/images/kibana_discover.png" width="50%"/></p>
 <h2>Searching a Log Index</h2>
 <h3>Log Structure</h3>
 <p>The log structure is effectively a JSON object (with nesting). There are a few fields that are worth pointing out:</p>
@@ -486,13 +486,13 @@ footer
 <li><code>message_hash</code>: the SHA256 of the protobuf encoded bytes for the abci message that caused the logs.</li>
 <li><code>ns</code> (namespace): a list of increasingly specific scopes for where the log originated. In this case, <code>nameservice</code> is the root namespace, <code>server</code> or <code>application</code> is the next scope.</li>
 </ul>
-<p>Remember that the basic lifescycle of an <code>ABCI</code> message is that it first comes to the ABCI-server from tendermint, is then handed off to your application for processing, and finally the response is sent from the ABCI-server back to tendermint. In order to better track this lifecycle, we highly recommend you use the <a href="https://github.com/f-o-a-m/hs-abci/blob/master/hs-abci-extra/src/Network/ABCI/Server/Middleware/Logger.hs">logging middleware</a>. This middleware will attach the <code>message_type</code> and <code>message_hash</code> to the context for every single log that is produced, meaning that you can get a trace for a given message by simply searching its hash.</p>
+<p>Remember that the basic lifescycle of an <code>ABCI</code> message is that it first comes to the ABCI-server from tendermint, is then handed off to your application for processing, and finally the response is sent from the ABCI-server back to tendermint. In order to better track this lifecycle, we highly recommend you use the <a href="https://github.com/f-o-a-m/kepler/blob/master/hs-abci-extra/src/Network/ABCI/Server/Middleware/Logger.hs">logging middleware</a>. This middleware will attach the <code>message_type</code> and <code>message_hash</code> to the context for every single log that is produced, meaning that you can get a trace for a given message by simply searching its hash.</p>
 <h3>Querying the Logs</h3>
 <p>You can create custom search filters in the <em>Discover</em> tab, just click the <em>Add a filter</em> button near the search bar. For example, we can filter all of the logs for those that correspond to a <em>deliverTx</em> message:</p>
-<p><img src="https://raw.githubusercontent.com/f-o-a-m/hs-abci/master/hs-abci-examples/nameservice/images/kibana_discover_filter.png" width="50%"/></p>
+<p><img src="https://raw.githubusercontent.com/f-o-a-m/kepler/master/hs-abci-docs/nameservice/images/kibana_discover_filter.png" width="50%"/></p>
 <p>(<strong>NOTE</strong>: If you run the e2e tests against the docker network, you should see search results corresponding to the transactions created by the test suite. )</p>
 <p>Similarly, you can compose multiple filters to obtain only those logs emitted by the application itself during a <em>deliverTx</em> context, i.e. by filtering for <code>application</code> on the <code>ns</code> namespace field:</p>
-<p><img src="https://raw.githubusercontent.com/f-o-a-m/hs-abci/master/hs-abci-examples/nameservice/images/kibana_discover_filter_advanced.png" width="50%"/></p>
+<p><img src="https://raw.githubusercontent.com/f-o-a-m/kepler/master/hs-abci-docs/nameservice/images/kibana_discover_filter_advanced.png" width="50%"/></p>
 <h3>Indexing Transaction Events</h3>
 <p>If you view the results from the filter <code>message_type=deliverTx, ns=application</code>, you might see results from the e2e test suite like</p>
 <pre class="json"><code>...
